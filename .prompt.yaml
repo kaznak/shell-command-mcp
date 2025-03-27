@@ -185,3 +185,34 @@
 
 
         Found 2 errors in the same file, starting at: src/server.ts:23
+    - timestamp: 20250327232123
+      prompt: |
+        コンパイルが通りました
+        ➜ npm run build                
+
+        > shell-command-mcp@1.0.0 build
+        > tsc
+
+        以下のエラーが出ました。
+
+        > shell-command-mcp@1.0.0 lint
+        > eslint src/**/*.ts
+
+
+        Oops! Something went wrong! :(
+
+        ESLint: 8.57.1
+
+        Error: ESLint configuration in .eslintrc.js is invalid:
+                - Unexpected top-level property "__esModule".
+
+            at ConfigValidator.validateConfigSchema (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:2177:19)
+            at ConfigArrayFactory._normalizeConfigData (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:3019:19)
+            at ConfigArrayFactory.loadInDirectory (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:2887:33)
+            at CascadingConfigArrayFactory._loadConfigInAncestors (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:3871:46)
+            at CascadingConfigArrayFactory._loadConfigInAncestors (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:3890:20)
+            at CascadingConfigArrayFactory.getConfigArrayForFile (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/@eslint/eslintrc/dist/eslintrc.cjs:3792:18)
+            at FileEnumerator._iterateFilesRecursive (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/eslint/lib/cli-engine/file-enumerator.js:450:49)
+            at _iterateFilesRecursive.next (<anonymous>)
+            at FileEnumerator.iterateFiles (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/eslint/lib/cli-engine/file-enumerator.js:299:49)
+            at iterateFiles.next (<anonymous>)
