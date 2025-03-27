@@ -64,16 +64,15 @@ RUN ARCH=$(uname -m | sed 's/aarch64/arm64/' | sed 's/x86_64/x64/') && \
     npm install -g npm@11.2.0 && \
     ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-    # Create a non-root user to run the MCP server
-RUN useradd -m -s /bin/bash mcp
-
-# Set up working directory
-WORKDIR /home/mcp/app
-
-USER mcp
-
+WORKDIR /mcpserver
 COPY --chown=mcp:mcp . .
 RUN npm install && npm run build
 
+# Create a non-root user to run the MCP server
+RUN useradd -m -s /bin/bash mcp
+
+USER mcp
+WORKDIR /home/mcp
+
 # Command to run the MCP server
-CMD ["node", "build/index.js"]
+CMD ["node", "/mcpserver/build/index.js"]
