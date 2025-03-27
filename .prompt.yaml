@@ -275,3 +275,218 @@
           43:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
         ✖ 3 problems (3 errors, 0 warnings)
+    - timestamp: 20250327233344
+      prompt: |
+        コンパイルとlintが通るようになりました。
+        shell-mcp via ⬢ 22.14.0 …
+        ➜ npm run lint      
+
+        > shell-command-mcp@1.0.0 lint
+        > eslint src/**/*.ts
+
+        =============
+
+        WARNING: You are currently running a version of TypeScript which is not officially supported by @typescript-eslint/typescript-estree.
+
+        You may find that it works just fine, or you may not.
+
+        SUPPORTED TYPESCRIPT VERSIONS: >=4.3.5 <5.4.0
+
+        YOUR TYPESCRIPT VERSION: 5.8.2
+
+        Please only submit bug reports when using the officially supported version.
+
+        =============
+
+        shell-mcp via ⬢ 22.14.0 …
+        ➜ npm run build
+
+        > shell-command-mcp@1.0.0 build
+        > tsc
+
+        イメージのビルドでエラーが出ました。
+        shell-mcp via ⬢ 22.14.0 …
+        ➜ make                              
+        docker-compose build
+        WARN[0000] /home/kaznak/tmp/mcpworks/shell-mcp/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+        [+] Building 0/0
+        [+] Building 0/1erver  Building                                                                                                                                                                                     0.0s 
+        [+] Building 24.8s (5/17)                                                                                                                                                                                 docker:default 
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s
+        [+] Building 25.0s (5/17)                                                                                                                                                                                 docker:default
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s 
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s 
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s 
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s 
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s 
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s Building                                                                                                                                                             25.1s 
+        [+] Building 25.1s (5/17)                                                                                                                                                                                 docker:default
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s Building                                                                                                                                                             25.3s 
+        [+] Building 25.3s (5/17)                                                                                                                                                                                 docker:default
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s Building                                                                                                                                                             25.4s 
+        [+] Building 25.4s (5/17)                                                                                                                                                                                 docker:default
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s Building                                                                                                                                                             25.6s 
+        [+] Building 25.6s (5/17)                                                                                                                                                                                 docker:default
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        [+] Building 0/1ing context: 64.85MB                                                                                                                                                                                0.7s 
+        [+] Building 94.9s (6/17)                                                                                                                                                                                 docker:default 
+        [+] Building 102.8s (7/17)                                                                                                                                                                                docker:default 
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s 
+        => => transferring dockerfile: 2.31kB                                                                                                                                                                              0.0s
+        => [mcp-server internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                                          0.0s 
+        => [mcp-server internal] load .dockerignore                                                                                                                                                                        0.0s
+        => => transferring context: 2B                                                                                                                                                                                     0.0s
+        => [mcp-server internal] load build context                                                                                                                                                                        0.7s
+        => => transferring context: 64.85MB                                                                                                                                                                                0.7s
+        => CACHED [mcp-server  1/13] FROM docker.io/library/ubuntu:22.04                                                                                                                                                   0.0s
+        => [mcp-server  2/13] RUN apt-get update && apt-get install -y     curl     wget     git     gnupg     lsb-release     software-properties-common     apt-transport-https     ca-certificates     unzip     zip   83.1s 
+        => ERROR [mcp-server  3/13] RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -     && apt-get update     && apt-get install -y nodejs     && apt-get clean     && rm -rf /var/lib/apt/lists/*          19.6s 
+        ------                                                                                                                                                                                                                   
+        > [mcp-server  3/13] RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -     && apt-get update     && apt-get install -y nodejs     && apt-get clean     && rm -rf /var/lib/apt/lists/*:                      
+        0.366 2025-03-27 14:31:28 - Installing pre-requisites                                                                                                                                                                    
+        0.740 Get:1 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]                                                                                                                                          
+        0.886 Get:2 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]                                                                                                                                                    
+        1.556 Get:3 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [3884 kB]                                                                                                                         
+        2.298 Get:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+        2.635 Get:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+        2.683 Get:6 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [47.7 kB]
+        2.688 Get:7 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [2735 kB]
+        3.052 Get:8 http://archive.ubuntu.com/ubuntu jammy/multiverse amd64 Packages [266 kB]
+        3.298 Get:9 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [17.5 MB]
+        3.371 Get:10 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1239 kB]
+        6.498 Get:11 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1792 kB]
+        6.689 Get:12 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 Packages [164 kB]
+        6.708 Get:13 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [4049 kB]
+        7.100 Get:14 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1538 kB]
+        7.215 Get:15 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3045 kB]
+        7.488 Get:16 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 Packages [55.7 kB]
+        7.493 Get:17 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [35.2 kB]
+        7.496 Get:18 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [82.7 kB]
+        7.602 Fetched 37.1 MB in 7s (5136 kB/s)
+        7.602 Reading package lists...
+        8.374 Reading package lists...
+        9.192 Building dependency tree...
+        9.367 Reading state information...
+        9.532 ca-certificates is already the newest version (20240203~22.04.1).
+        9.532 curl is already the newest version (7.81.0-1ubuntu1.20).
+        9.532 gnupg is already the newest version (2.2.27-3ubuntu2.1).
+        9.532 apt-transport-https is already the newest version (2.4.13).
+        9.532 0 upgraded, 0 newly installed, 0 to remove and 13 not upgraded.
+        9.778 Get:1 https://deb.nodesource.com/node_20.x nodistro InRelease [12.1 kB]
+        9.842 Get:2 https://deb.nodesource.com/node_20.x nodistro/main amd64 Packages [10.8 kB]
+        10.06 Hit:3 http://security.ubuntu.com/ubuntu jammy-security InRelease
+        10.21 Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease
+        10.46 Hit:5 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+        10.71 Hit:6 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+        10.77 Fetched 23.0 kB in 1s (21.5 kB/s)
+        10.77 Reading package lists...
+        11.49 2025-03-27 14:31:39 - Repository configured successfully.
+        11.49 2025-03-27 14:31:39 - To install Node.js, run: apt-get install nodejs -y
+        11.49 2025-03-27 14:31:39 - You can use N|solid Runtime as a node.js alternative
+        11.49 2025-03-27 14:31:39 - To install N|solid Runtime, run: apt-get install nsolid -y 
+        11.49 
+        11.59 Hit:1 https://deb.nodesource.com/node_20.x nodistro InRelease
+        11.88 Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease
+        12.02 Hit:3 http://archive.ubuntu.com/ubuntu jammy InRelease
+        12.26 Hit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+        12.49 Hit:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+        12.55 Reading package lists...
+        13.29 Reading package lists...
+        14.01 Building dependency tree...
+        14.15 Reading state information...
+        14.30 The following packages were automatically installed and are no longer required:
+        14.30   gyp libc-ares2 libjs-events libjs-inherits libjs-is-typedarray
+        14.30   libjs-typedarray-to-buffer libnode-dev libnode72 libssl-dev libuv1-dev
+        14.30   node-abbrev node-agent-base node-ansi-regex node-ansi-styles node-ansistyles
+        14.30   node-aproba node-archy node-are-we-there-yet node-asap node-balanced-match
+        14.30   node-brace-expansion node-builtins node-chalk node-chownr node-cli-table
+        14.30   node-clone node-color-convert node-color-name node-colors node-columnify
+        14.30   node-console-control-strings node-core-util-is node-debug
+        14.30   node-decompress-response node-defaults node-delegates node-depd
+        14.30   node-encoding node-end-of-stream node-err-code node-escape-string-regexp
+        14.30   node-events node-fancy-log node-fs-write-stream-atomic node-fs.realpath
+        14.30   node-function-bind node-gauge node-get-stream node-glob node-got
+        14.30   node-graceful-fs node-has-flag node-has-unicode node-hosted-git-info
+        14.30   node-https-proxy-agent node-iconv-lite node-iferr node-imurmurhash
+        14.30   node-indent-string node-inflight node-inherits node-ini node-ip
+        14.30   node-ip-regex node-is-typedarray node-isarray node-isexe node-json-buffer
+        14.30   node-json-parse-better-errors node-jsonparse node-lowercase-keys
+        14.30   node-lru-cache node-mimic-response node-minimatch node-minipass node-ms
+        14.30   node-mute-stream node-negotiator node-normalize-package-data
+        14.30   node-npm-bundled node-npm-package-arg node-npmlog node-object-assign
+        14.30   node-once node-osenv node-p-cancelable node-p-map node-path-is-absolute
+        14.30   node-process-nextick-args node-promise-inflight node-promise-retry
+        14.30   node-promzard node-pump node-quick-lru node-read node-read-package-json
+        14.30   node-readable-stream node-resolve node-retry node-rimraf node-run-queue
+        14.30   node-safe-buffer node-semver node-set-blocking node-signal-exit node-slash
+        14.30   node-slice-ansi node-spdx-correct node-spdx-exceptions
+        14.30   node-spdx-expression-parse node-spdx-license-ids node-ssri
+        14.30   node-string-decoder node-string-width node-strip-ansi node-supports-color
+        14.30   node-text-table node-time-stamp node-typedarray-to-buffer
+        14.30   node-unique-filename node-util-deprecate node-validate-npm-package-license
+        14.30   node-validate-npm-package-name node-wcwidth.js node-whatwg-fetch
+        14.30   node-wide-align node-wrappy node-write-file-atomic node-yallist
+        14.30 Use 'apt autoremove' to remove them.
+        14.32 The following packages will be REMOVED:
+        14.32   node-cacache node-copy-concurrently node-gyp node-mkdirp
+        14.32   node-move-concurrently node-nopt node-tar node-which npm
+        14.32 The following packages will be upgraded:
+        14.32   nodejs
+        14.39 1 upgraded, 0 newly installed, 9 to remove and 13 not upgraded.
+        14.39 Need to get 32.0 MB of archives.
+        14.39 After this operation, 195 MB of additional disk space will be used.
+        14.39 Get:1 https://deb.nodesource.com/node_20.x nodistro/main amd64 nodejs amd64 20.19.0-1nodesource1 [32.0 MB]
+        17.30 debconf: delaying package configuration, since apt-utils is not installed
+        17.35 Fetched 32.0 MB in 3s (10.7 MB/s)
+        (Reading database ... 23576 files and directories currently installed.)
+        17.38 Removing npm (8.5.1~ds-1) ...
+        17.47 Removing node-cacache (15.0.5+~cs13.9.21-3) ...
+        17.51 Removing node-move-concurrently (1.0.1-4) ...
+        17.55 Removing node-copy-concurrently (1.0.5-8) ...
+        17.58 Removing node-gyp (8.4.1-1) ...
+        17.62 Removing node-tar (6.1.11+ds1+~cs6.0.6-1) ...
+        17.66 Removing node-mkdirp (1.0.4+~1.0.2-1) ...
+        17.70 Removing node-nopt (5.0.0-2) ...
+        17.73 Removing node-which (2.0.2+~cs1.3.2-2) ...
+        (Reading database ... 22609 files and directories currently installed.)
+        17.81 Preparing to unpack .../nodejs_20.19.0-1nodesource1_amd64.deb ...
+        17.82 Unpacking nodejs (20.19.0-1nodesource1) over (12.22.9~dfsg-1ubuntu3.6) ...
+        19.53 dpkg: error processing archive /var/cache/apt/archives/nodejs_20.19.0-1nodesource1_amd64.deb (--unpack):
+        19.53  trying to overwrite '/usr/include/node/common.gypi', which is also in package libnode-dev 12.22.9~dfsg-1ubuntu3.6
+        19.54 dpkg-deb: error: paste subprocess was killed by signal (Broken pipe)
+        19.56 Errors were encountered while processing:
+        19.56  /var/cache/apt/archives/nodejs_20.19.0-1nodesource1_amd64.deb
+        [+] Building 0/1cess /usr/bin/dpkg returned an error code (1)
+        ⠼ Service mcp-server  Building                                                                                                                                                                                   103.4s 
+        failed to solve: process "/bin/sh -c curl -fsSL https://deb.nodesource.com/setup_20.x | bash -     && apt-get update     && apt-get install -y nodejs     && apt-get clean     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100
+        make: *** [Makefile:5: build] Error 17
