@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 # Set non-interactive mode for apt
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_VERSION=22.14.0
 
 # Install basic utilities and dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,17 +33,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20.x - 修正版: 競合を避けるために既存のnode関連パッケージを削除してからインストール
-RUN apt-get update \
-    && apt-get purge -y nodejs npm libnode-dev \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get update \
-    && apt-get install -y nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install Kubernetes tools
 # kubectl
 RUN curl -fsSL https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
@@ -66,16 +56,21 @@ RUN curl -fsSL https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Lin
     && mv k9s /usr/local/bin/ \
     && rm k9s.tar.gz LICENSE README.md 2>/dev/null || true
 
-# Create a non-root user to run the MCP server
-RUN useradd -m -s /bin/bash mcp \
-    && echo "mcp ALL=(mcp) NOPASSWD:ALL" > /etc/sudoers.d/mcp
+# Node.jsのバイナリをダウンロードしてインストール
+RUN ARCH=$(uname -m | sed 's/aarch64/arm64/' | sed 's/x86_64/x64/') && \
+    curl -fsSLO --compressed "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${ARCH}.tar.xz" && \
+    tar -xJf "node-v${NODE_VERSION}-linux-${ARCH}.tar.xz" -C /usr/local --strip-components=1 --no-same-owner && \
+    rm "node-v${NODE_VERSION}-linux-${ARCH}.tar.xz" && \
+    ln -s /usr/local/bin/node /usr/local/bin/nodejs
+
+    # Create a non-root user to run the MCP server
+RUN useradd -m -s /bin/bash mcp
 
 # Set up working directory
 WORKDIR /home/mcp/app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-# npm ciの代わりにnpm installを使用
 RUN npm install
 
 # Copy application source
@@ -83,6 +78,8 @@ COPY --chown=mcp:mcp . .
 
 # Build TypeScript
 RUN npm run build
+
+RUN chown -R mcp:mcp /home/mcp
 
 # Switch to non-root user
 USER mcp
