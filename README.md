@@ -71,7 +71,7 @@ Add the following configuration to your Claude for Desktop configuration file:
         "-i",
         "-v",
         "/path/to/home/dir:/home/mcp",
-        "shell-command-mcp_mcp-server"
+        "shell-command-mcp"
       ]
     }
   }
