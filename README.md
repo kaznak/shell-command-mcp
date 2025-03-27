@@ -19,12 +19,14 @@ This is an MCP (Model Context Protocol) server that allows executing shell comma
 ### Installation
 
 1. Clone this repository:
+
    ```
    git clone https://github.com/yourusername/shell-command-mcp.git
    cd shell-command-mcp
    ```
 
 2. Build the Docker image:
+
    ```
    make build
    ```
@@ -37,11 +39,13 @@ This is an MCP (Model Context Protocol) server that allows executing shell comma
 ### Local Development
 
 1. Install dependencies:
+
    ```
    npm ci
    ```
 
 2. Start the development server:
+
    ```
    npm run dev
    ```
@@ -61,7 +65,14 @@ Add the following configuration to your Claude for Desktop configuration file:
   "mcpServers": {
     "shell-command": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "-v", "/path/to/home/dir:/home/mcp", "shell-command-mcp_mcp-server"]
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "/path/to/home/dir:/home/mcp",
+        "shell-command-mcp_mcp-server"
+      ]
     }
   }
 }
