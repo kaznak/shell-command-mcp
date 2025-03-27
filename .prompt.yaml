@@ -33,3 +33,84 @@
     npm error notarget In most cases you or one of your dependencies are requesting
     npm error notarget a package version that doesn't exist.
     npm error A complete log of this run can be found in: /home/kaznak/.npm/_logs/2025-03-27T13_54_14_965Z-debug-0.log
+  - timestamp: 20250327230327
+    prompt: |
+      以下の MCP サーバのツールは必要ありません:
+      - ls tool
+      - find tool
+      - kubectl tool
+      - helm tool
+
+      以下のエラーが出ました:
+      ➜ npm run build 
+
+      > shell-command-mcp@1.0.0 build
+      > tsc
+
+      src/server.ts:1:27 - error TS2307: Cannot find module '@modelcontextprotocol/sdk/server/mcp.js' or its corresponding type declarations.
+
+      1 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/server.ts:4:32 - error TS2307: Cannot find module './utils.js' or its corresponding type declarations.
+
+      4 import { executeCommand } from './utils.js';
+                                      ~~~~~~~~~~~~
+
+      src/server.ts:23:14 - error TS7031: Binding element 'command' implicitly has an 'any' type.
+
+      23     async ({ command, workingDir, env, timeout }) => {
+                      ~~~~~~~
+
+      src/server.ts:23:23 - error TS7031: Binding element 'workingDir' implicitly has an 'any' type.
+
+      23     async ({ command, workingDir, env, timeout }) => {
+                              ~~~~~~~~~~
+
+      src/server.ts:23:35 - error TS7031: Binding element 'env' implicitly has an 'any' type.
+
+      23     async ({ command, workingDir, env, timeout }) => {
+                                          ~~~
+
+      src/server.ts:23:40 - error TS7031: Binding element 'timeout' implicitly has an 'any' type.
+
+      23     async ({ command, workingDir, env, timeout }) => {
+                                                ~~~~~~~
+
+      src/server.ts:109:14 - error TS7031: Binding element 'path' implicitly has an 'any' type.
+
+      109     async ({ path, pattern, type }) => {
+                      ~~~~
+
+      src/server.ts:109:20 - error TS7031: Binding element 'pattern' implicitly has an 'any' type.
+
+      109     async ({ path, pattern, type }) => {
+                            ~~~~~~~
+
+      src/server.ts:109:29 - error TS7031: Binding element 'type' implicitly has an 'any' type.
+
+      109     async ({ path, pattern, type }) => {
+                                      ~~~~
+
+      src/server.ts:148:14 - error TS7031: Binding element 'args' implicitly has an 'any' type.
+
+      148     async ({ args, kubeconfig }) => {
+                      ~~~~
+
+      src/server.ts:148:20 - error TS7031: Binding element 'kubeconfig' implicitly has an 'any' type.
+
+      148     async ({ args, kubeconfig }) => {
+                            ~~~~~~~~~~
+
+      src/server.ts:187:14 - error TS7031: Binding element 'args' implicitly has an 'any' type.
+
+      187     async ({ args, kubeconfig }) => {
+                      ~~~~
+
+      src/server.ts:187:20 - error TS7031: Binding element 'kubeconfig' implicitly has an 'any' type.
+
+      187     async ({ args, kubeconfig }) => {
+                            ~~~~~~~~~~
+
+
+      Found 13 errors in the same file, starting at: src/server.ts:1
