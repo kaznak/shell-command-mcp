@@ -165,3 +165,23 @@
 
 
         Found 1 error in src/server.ts:1
+    - timestamp: 20250327231843
+      prompt: |
+        以下のエラーが出ました。
+        ➜ npm run build     
+
+        > shell-command-mcp@1.0.0 build
+        > tsc
+
+        src/server.ts:23:7 - error TS2353: Object literal may only specify known properties, and 'method' does not exist in type 'ZodObject<{ method: ZodLiteral<string>; }, UnknownKeysParam, ZodTypeAny, { method: string; }, { method: string; }>'.
+
+        23       method: 'tools/call',
+                ~~~~~~
+
+        src/server.ts:36:63 - error TS2339: Property 'params' does not exist on type '{ method: string; }'.
+
+        36         const { command, workingDir, env, timeout } = request.params.arguments;
+                                                                        ~~~~~~
+
+
+        Found 2 errors in the same file, starting at: src/server.ts:23
