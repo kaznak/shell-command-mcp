@@ -12,6 +12,13 @@ export interface CommandResult {
   exitCode: number;
 }
 
+// execa のエラー型を定義
+interface ExecaError extends Error {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+}
+
 /**
  * Execute a shell command and return the result
  */
@@ -37,10 +44,11 @@ export async function executeCommand(
   } catch (error) {
     if (error instanceof Error && 'exitCode' in error && 'stdout' in error && 'stderr' in error) {
       // This is an execa error with command output
+      const execaError = error as ExecaError;
       return {
-        stdout: (error as any).stdout || '',
-        stderr: (error as any).stderr || '',
-        exitCode: (error as any).exitCode || 1,
+        stdout: execaError.stdout || '',
+        stderr: execaError.stderr || '',
+        exitCode: execaError.exitCode || 1,
       };
     }
 
