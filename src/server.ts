@@ -1,36 +1,44 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { executeCommand } from './utils.js';
 
 export async function startServer(): Promise<void> {
   // Create MCP server instance
-  const server = new McpServer({
-    name: 'shell-command-mcp',
-    version: '1.0.0',
-  });
+  const server = new Server(
+    {
+      name: 'shell-command-mcp',
+      version: '1.0.0',
+    },
+    {
+      capabilities: {
+        tools: {},
+      },
+    },
+  );
 
   // Register shell command execution tool
-  server.tool(
-    'execute-command',
-    'Execute a shell command',
+  server.setRequestHandler(
     {
-      command: z.string().describe('The shell command to execute'),
-      workingDir: z.string().optional().describe('Working directory for command execution'),
-      env: z.record(z.string()).optional().describe('Environment variables for the command'),
-      timeout: z.number().optional().describe('Timeout in milliseconds'),
+      method: 'tools/call',
+      params: z.object({
+        name: z.literal('execute-command'),
+        arguments: z.object({
+          command: z.string().describe('The shell command to execute'),
+          workingDir: z.string().optional().describe('Working directory for command execution'),
+          env: z.record(z.string()).optional().describe('Environment variables for the command'),
+          timeout: z.number().optional().describe('Timeout in milliseconds'),
+        }),
+      }),
     },
-    async (params: {
-      command: string;
-      workingDir?: string;
-      env?: Record<string, string>;
-      timeout?: number;
-    }) => {
+    async (request) => {
       try {
-        const result = await executeCommand(params.command, {
-          cwd: params.workingDir,
-          env: params.env,
-          timeout: params.timeout,
+        const { command, workingDir, env, timeout } = request.params.arguments;
+
+        const result = await executeCommand(command, {
+          cwd: workingDir,
+          env,
+          timeout,
         });
 
         return {
