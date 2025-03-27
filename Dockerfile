@@ -23,8 +23,6 @@ RUN apt-get update && apt-get install -y \
     dnsutils \
     net-tools \
     sudo \
-    nodejs \
-    npm \
     python3 \
     python3-pip \
     ssh \
@@ -34,8 +32,12 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20.x
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+# Install Node.js 20.x - 修正版: 競合を避けるために既存のnode関連パッケージを削除してからインストール
+RUN apt-get update \
+    && apt-get purge -y nodejs npm libnode-dev \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update \
     && apt-get install -y nodejs \
     && apt-get clean \
@@ -83,9 +85,6 @@ RUN npm run build
 
 # Switch to non-root user
 USER mcp
-
-# Expose port if needed for HTTP (optional)
-# EXPOSE 3000
 
 # Command to run the MCP server
 CMD ["npm", "start"]

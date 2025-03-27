@@ -1,5 +1,4 @@
-version: '3.8'
-
+# version属性は廃止されたので削除
 services:
   mcp-server:
     build:
