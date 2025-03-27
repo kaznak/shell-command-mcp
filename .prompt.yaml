@@ -216,3 +216,28 @@
             at _iterateFilesRecursive.next (<anonymous>)
             at FileEnumerator.iterateFiles (/home/kaznak/tmp/mcpworks/shell-mcp/node_modules/eslint/lib/cli-engine/file-enumerator.js:299:49)
             at iterateFiles.next (<anonymous>)
+    - timestamp: 20250327232339
+      prompt: |
+        以下のエラーが出ました。
+        ➜ npm run lint  
+
+        > shell-command-mcp@1.0.0 lint
+        > eslint src/**/*.ts
+
+
+        Oops! Something went wrong! :(
+
+        ESLint: 8.57.1
+
+        ReferenceError: Cannot read config file: /home/kaznak/tmp/mcpworks/shell-mcp/.eslintrc.js
+        Error: module is not defined
+            at file:///home/kaznak/tmp/mcpworks/shell-mcp/.eslintrc.js:1:1
+            at ModuleJobSync.runSync (node:internal/modules/esm/module_job:395:35)
+            at ModuleLoader.importSyncForRequire (node:internal/modules/esm/loader:360:47)
+            at loadESMFromCJS (node:internal/modules/cjs/loader:1385:24)
+            at Module._compile (node:internal/modules/cjs/loader:1536:5)
+            at Object..js (node:internal/modules/cjs/loader:1706:10)
+            at Module.load (node:internal/modules/cjs/loader:1289:32)
+            at Function._load (node:internal/modules/cjs/loader:1108:12)
+            at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+            at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
