@@ -1,4 +1,4 @@
-import { startServer } from './server.js';
+import { startServer } from './server';
 
 async function main() {
   try {
