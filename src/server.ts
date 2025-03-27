@@ -11,6 +11,7 @@ export const server = new McpServer({
 // Execute a shell command
 server.tool(
   'execute-command',
+  'Execute a shell command',
   {
     command: z.string(),
     options: z.object({
@@ -19,7 +20,23 @@ server.tool(
       timeout: z.number().int().positive().optional(),
     }),
   },
-  async ({ command, options }) => ({
-    content: [executeCommand(command, options)],
-  }),
+  async ({ command, options }) => {
+    const { stdout, stderr, exitCode } = await executeCommand(command, options);
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `stdout: ${stdout}`,
+        },
+        {
+          type: 'text',
+          text: `stderr: ${stderr}`,
+        },
+        {
+          type: 'text',
+          text: `exitCode: ${exitCode}`,
+        },
+      ],
+    };
+  },
 );
