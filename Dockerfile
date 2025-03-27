@@ -70,20 +70,10 @@ RUN useradd -m -s /bin/bash mcp
 # Set up working directory
 WORKDIR /home/mcp/app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy application source
-COPY --chown=mcp:mcp . .
-
-# Build TypeScript
-RUN npm run build
-
-RUN chown -R mcp:mcp /home/mcp
-
-# Switch to non-root user
 USER mcp
+
+COPY --chown=mcp:mcp . .
+RUN npm install && npm run build
 
 # Command to run the MCP server
 CMD ["node", "build/index.js"]

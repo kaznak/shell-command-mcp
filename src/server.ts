@@ -11,7 +11,10 @@ export const server = new McpServer({
 // Execute a shell command
 server.tool(
   'execute-command',
-  'Execute a shell command',
+  `# execute-command
+This tool executes shell command with /bin/sh.
+Run \`env\` command to get environment variables and set it into options.env.
+  `,
   {
     command: z.string(),
     options: z.object({
