@@ -32,11 +32,15 @@ export async function startServer(): Promise<void> {
           content: [
             {
               type: 'text',
-              text: JSON.stringify({
-                stdout: result.stdout,
-                stderr: result.stderr,
-                exitCode: result.exitCode,
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  stdout: result.stdout,
+                  stderr: result.stderr,
+                  exitCode: result.exitCode,
+                },
+                null,
+                2,
+              ),
             },
           ],
         };
@@ -97,7 +101,10 @@ export async function startServer(): Promise<void> {
     {
       path: z.string().describe('Starting path for search'),
       pattern: z.string().describe('Search pattern'),
-      type: z.enum(['f', 'd', 'l']).optional().describe('Type to find: f (file), d (directory), l (symlink)'),
+      type: z
+        .enum(['f', 'd', 'l'])
+        .optional()
+        .describe('Type to find: f (file), d (directory), l (symlink)'),
     },
     async ({ path, pattern, type }) => {
       try {
@@ -105,7 +112,7 @@ export async function startServer(): Promise<void> {
         if (type) {
           command += ` -type ${type}`;
         }
-        
+
         const result = await executeCommand(command);
 
         return {
