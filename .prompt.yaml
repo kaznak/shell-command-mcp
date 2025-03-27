@@ -490,3 +490,53 @@
         ⠼ Service mcp-server  Building                                                                                                                                                                                   103.4s 
         failed to solve: process "/bin/sh -c curl -fsSL https://deb.nodesource.com/setup_20.x | bash -     && apt-get update     && apt-get install -y nodejs     && apt-get clean     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100
         make: *** [Makefile:5: build] Error 17
+    - timestamp: 20250327233955
+      prompt: |
+        以下のエラーが出ました。
+        shell-mcp via ⬢ 22.14.0 …
+        ➜ make 
+        docker-compose build
+        [+] Building 0/0
+        [+] Building 0/1erver  Building                                                                                                                                                                                     0.1s 
+        [+] Building 21.2s (5/17)                                                                                                                                                                                 docker:default 
+        => [mcp-server internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+
+        ... ommited ...
+
+        => [mcp-server  9/13] WORKDIR /home/mcp/app                                                                                                                                                                        0.0s 
+        => [mcp-server 10/13] COPY package*.json ./                                                                                                                                                                        0.1s 
+        => ERROR [mcp-server 11/13] RUN npm ci                                                                                                                                                                             1.2s 
+        ------                                                                                                                                                                                                                   
+        > [mcp-server 11/13] RUN npm ci:                                                                                                                                                                                        
+        1.189 npm error code EUSAGE                                                                                                                                                                                              
+        1.189 npm error                                                                                                                                                                                                          
+        1.189 npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.                   
+        1.189 npm error                                                                                                                                                                                                          
+        1.189 npm error Invalid: lock file's typescript@5.8.2 does not satisfy typescript@5.3.3
+        1.189 npm error
+        1.189 npm error Clean install a project
+        1.189 npm error
+        1.189 npm error Usage:
+        1.189 npm error npm ci
+        1.189 npm error
+        1.189 npm error Options:
+        1.189 npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+        1.189 npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+        1.189 npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+        1.189 npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+        1.189 npm error [--no-bin-links] [--no-fund] [--dry-run]
+        1.189 npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+        1.189 npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+        1.189 npm error
+        1.189 npm error aliases: clean-install, ic, install-clean, isntall-clean
+        1.189 npm error
+        1.189 npm error Run "npm help ci" for more info
+        1.191 npm notice
+        1.191 npm notice New major version of npm available! 10.8.2 -> 11.2.0
+        1.191 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.2.0
+        1.191 npm notice To update run: npm install -g npm@11.2.0
+        1.191 npm notice
+        [+] Building 0/1A complete log of this run can be found in: /root/.npm/_logs/2025-03-27T14_37_25_273Z-debug-0.log
+        ⠙ Service mcp-server  Building                                                                                                                                                                                   111.1s 
+        failed to solve: process "/bin/sh -c npm ci" did not complete successfully: exit code: 1
+        make: *** [Makefile:5: build] Error 17
