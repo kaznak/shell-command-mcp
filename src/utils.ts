@@ -36,7 +36,7 @@ export async function executeCommand(
       all: true,
     });
 
-    console.log('result', result);
+    console.error('result', result);
 
     return {
       stdout: result.stdout,
