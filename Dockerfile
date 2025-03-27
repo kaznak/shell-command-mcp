@@ -64,7 +64,7 @@ RUN curl -fsSL https://github.com/kubernetes-sigs/kustomize/releases/download/ku
 RUN curl -fsSL https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Linux_amd64.tar.gz -o k9s.tar.gz \
     && tar -zxvf k9s.tar.gz \
     && mv k9s /usr/local/bin/ \
-    && rm k9s.tar.gz LICENSE README.md
+    && rm k9s.tar.gz LICENSE README.md 2>/dev/null || true
 
 # Create a non-root user to run the MCP server
 RUN useradd -m -s /bin/bash mcp \
@@ -75,7 +75,8 @@ WORKDIR /home/mcp/app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci
+# npm ciの代わりにnpm installを使用
+RUN npm install
 
 # Copy application source
 COPY --chown=mcp:mcp . .
