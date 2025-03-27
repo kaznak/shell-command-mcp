@@ -94,47 +94,6 @@ Arguments:
 - timeout: (optional) Timeout in milliseconds
 ```
 
-### ls
-
-List directory contents.
-
-```
-Arguments:
-- path: (optional) Path to list (defaults to current directory)
-- options: (optional) Additional ls command options
-```
-
-### find
-
-Find files and directories.
-
-```
-Arguments:
-- path: Starting path for search
-- pattern: Search pattern
-- type: (optional) Type to find: f (file), d (directory), l (symlink)
-```
-
-### kubectl
-
-Execute kubectl commands.
-
-```
-Arguments:
-- args: kubectl arguments
-- kubeconfig: (optional) Path to kubeconfig file
-```
-
-### helm
-
-Execute helm commands.
-
-```
-Arguments:
-- args: helm arguments
-- kubeconfig: (optional) Path to kubeconfig file
-```
-
 ## Security Considerations
 
 - The MCP server runs as a non-root user within the container
