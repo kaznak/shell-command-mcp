@@ -1,40 +1,40 @@
 {
-    "name": "shell-command-mcp",
-    "version": "1.0.0",
-    "description": "MCP server for executing shell commands in a Docker container",
-    "main": "build/index.js",
-    "type": "module",
-    "scripts": {
-      "build": "tsc",
-      "lint": "eslint src/**/*.ts",
-      "lint:fix": "eslint src/**/*.ts --fix",
-      "format": "prettier --write 'src/**/*.ts'",
-      "start": "node build/index.js",
-      "dev": "tsx src/index.ts",
-      "clean": "rm -rf build"
-    },
-    "keywords": [
-      "mcp",
-      "shell",
-      "docker",
-      "kubernetes"
-    ],
-    "author": "",
-    "license": "MIT",
-    "dependencies": {
-      "@modelcontextprotocol/sdk": "^0.9.0",
-      "execa": "^8.0.1",
-      "zod": "^3.22.4"
-    },
-    "devDependencies": {
-      "@types/node": "^20.10.3",
-      "@typescript-eslint/eslint-plugin": "^6.13.2",
-      "@typescript-eslint/parser": "^6.13.2",
-      "eslint": "^8.55.0",
-      "eslint-config-prettier": "^9.1.0",
-      "eslint-plugin-prettier": "^5.0.1",
-      "prettier": "^3.1.0",
-      "tsx": "^4.6.2",
-      "typescript": "^5.3.2"
-    }
+  "name": "shell-command-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for executing shell commands in a Docker container",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write 'src/**/*.ts'",
+    "start": "node build/index.js",
+    "dev": "tsx src/index.ts",
+    "clean": "rm -rf build"
+  },
+  "keywords": [
+    "mcp",
+    "shell",
+    "docker",
+    "kubernetes"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "execa": "^8.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.3",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "prettier": "^3.1.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  }
 }
