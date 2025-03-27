@@ -150,3 +150,18 @@
         Errors  Files
             1  src/index.ts:1
             3  src/server.ts:1
+    - timestamp: 20250327231607
+      prompt: |
+        以下のエラーが出ました。
+        ➜ npm run build 
+
+        > shell-command-mcp@1.0.0 build
+        > tsc
+
+        src/server.ts:1:27 - error TS2307: Cannot find module '@modelcontextprotocol/sdk/server/mcp.js' or its corresponding type declarations.
+
+        1 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+        Found 1 error in src/server.ts:1
