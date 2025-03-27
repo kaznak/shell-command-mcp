@@ -1,0 +1,24 @@
+- client: Claude Desktop
+  model: Claude 3.7 Sonnet
+  prompts:
+  - timestamp: 20250327224201
+    prompt: |
+    以下を開発してください:
+    - シェルコマンドを実行する MCP
+      - これ以外のツールは必要ない
+    - 開発言語は TypeScript
+      - 必ず prettier と eslint を導入し、対応する npm スクリプトを用意する
+    - MCP サーバは Docker コンテナで動作する
+    - コンテナイメージの仕様は以下の通り
+      - イメージは Ubuntu ベース
+      - 作業用のユーザを作成、MCP サーバはこのユーザで動作する
+        - このユーザは root 権限および root に昇格する権限を持たない
+        - 作業用ユーザのホームディレクトリは実行時にマウントする
+      - 以下のツールをインストール
+        - MCP サーバを動作させるために必要なプログラム
+        - 基本的な開発とインフラ関連作業に使用するツール
+        - 標準的なkubernetes関連ツール
+          - kubectl, helm, kustomize は必ずインストールする
+      - このコンテナからホスト環境の docker を操作出来ないようにする
+    - Claude Desktop 用の MCP 設定のスニペットを生成
+    - ビルドその他の開発のためのコマンドは npm スクリプトもしくは Makefile に記述する
