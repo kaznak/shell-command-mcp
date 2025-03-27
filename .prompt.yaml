@@ -241,3 +241,37 @@
             at Function._load (node:internal/modules/cjs/loader:1108:12)
             at TracingChannel.traceSync (node:diagnostics_channel:322:14)
             at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    - timestamp: 20250327232712
+      prompt: |
+        npm スクリプト format は以下のように変更しました。
+        > "format": "prettier -uw .",
+
+        また以下の内容の .prettierignore ファイルを追加しました。
+        > package-lock.json
+
+        lint ツールが動作するようになりました。
+        ➜ npm run lint                 
+
+        > shell-command-mcp@1.0.0 lint
+        > eslint src/**/*.ts
+
+        =============
+
+        WARNING: You are currently running a version of TypeScript which is not officially supported by @typescript-eslint/typescript-estree.
+
+        You may find that it works just fine, or you may not.
+
+        SUPPORTED TYPESCRIPT VERSIONS: >=4.3.5 <5.4.0
+
+        YOUR TYPESCRIPT VERSION: 5.8.2
+
+        Please only submit bug reports when using the officially supported version.
+
+        =============
+
+        /home/kaznak/tmp/mcpworks/shell-mcp/src/utils.ts
+          41:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+          42:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+          43:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+        ✖ 3 problems (3 errors, 0 warnings)
