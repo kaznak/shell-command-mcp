@@ -5,5 +5,6 @@
 {"method":"prompts/list","params":{},"jsonrpc":"2.0","id":3}
 {"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"env","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":4}
 {"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"ps","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":5}
-{"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"ls -l","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":5}
-{"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"cat /home/mcp/.profile","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":236}
+{"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"ls -l ~/Works","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":6}
+{"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"touch /home/mcp/Works/hoge","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":7}
+{"method":"tools/call","params":{"name":"execute-command","arguments":{"command":"cat /home/mcp/.profile","options":{"cwd":"/home/mcp"}}},"jsonrpc":"2.0","id":8}

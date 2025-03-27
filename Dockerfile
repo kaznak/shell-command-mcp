@@ -71,8 +71,8 @@ RUN npm install && npm run build
 # Create a non-root user to run the MCP server
 RUN useradd -m -s /bin/bash mcp
 
-USER mcp
 WORKDIR /home/mcp
+ENV WORKDIR=/home/mcp/Works/logs
 
 # Command to run the MCP server
-CMD ["node", "/mcpserver/build/index.js"]
+CMD ["/mcpserver/entrypoint.sh", "mcp", "node", "/mcpserver/build/index.js"]
