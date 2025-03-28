@@ -1,0 +1,13 @@
+# Create a user for the container
+## Run as root to map host user to container user.
+CIS-DI-0001
+
+# TODO
+## Enable Content trust for Docker
+CIS-DI-0005
+## Add HEALTHCHECK instruction to the container image
+CIS-DI-0006
+## Confirm safety of setuid/setgid files
+CIS-DI-0008
+## Only put necessary files
+DKL-LI-0003
