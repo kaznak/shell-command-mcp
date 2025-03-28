@@ -57,21 +57,23 @@ RUN curl -fsSL https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Lin
     && rm k9s.tar.gz LICENSE README.md 2>/dev/null || true
 
 # Install helmfile
-RUN curl -fsSL https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_linux_amd64.tar.gz -o helmfile.tar.gz \
+RUN mkdir -p tmp && cd tmp   \
+    && curl -fsSL https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_linux_amd64.tar.gz -o helmfile.tar.gz \
     && tar -zxvf helmfile.tar.gz \
     && mv helmfile /usr/local/bin/ \
-    && rm helmfile.tar.gz
+    && cd .. && rm -rf tmp
 
-# Install sops
+    # Install sops
 RUN curl -fsSL https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64 -o /usr/local/bin/sops \
     && chmod +x /usr/local/bin/sops
 
 # Install age
-RUN curl -fsSL https://github.com/FiloSottile/age/releases/download/v1.2.1/age-v1.2.1-linux-amd64.tar.gz -o age.tar.gz \
+RUN mkdir -p tmp && cd tmp   \
+    && curl -fsSL https://github.com/FiloSottile/age/releases/download/v1.2.1/age-v1.2.1-linux-amd64.tar.gz -o age.tar.gz \
     && tar -zxvf age.tar.gz \
-    && mv age /usr/local/bin/ \
-    && mv age-keygen /usr/local/bin/ \
-    && rm age.tar.gz
+    && mv age/age /usr/local/bin/ \
+    && mv age/age-keygen /usr/local/bin/ \
+    && cd .. && rm -rf tmp
 
 # Node.jsのバイナリをダウンロードしてインストール
 RUN ARCH=$(uname -m | sed 's/aarch64/arm64/' | sed 's/x86_64/x64/') && \
