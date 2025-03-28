@@ -3,6 +3,8 @@
 CIS-DI-0001
 
 # TODO
+# Avoid sudo command
+DKL-DI-0001
 ## Enable Content trust for Docker
 CIS-DI-0005
 ## Add HEALTHCHECK instruction to the container image
