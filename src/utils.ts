@@ -14,6 +14,9 @@ export interface CommandResult {
 
 /**
  * Execute a command using bash and return the result
+ * 
+ * Each command execution spawn a new bash process.
+ * This implementation causes overhead but is simple and isolated.
  */
 export async function executeCommand(
   command: string,
