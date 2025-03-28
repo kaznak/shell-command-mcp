@@ -65,7 +65,14 @@ Add the following configuration to your Claude for Desktop configuration file:
   "mcpServers": {
     "shell-command": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "-v", "/path/to/home/dir:/home/mcp", "shell-command-mcp"]
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "/path/to/home/dir:/home/mcp",
+        "ghcr.io/kaznak/shell-command-mcp:latest"
+      ]
     }
   }
 }
