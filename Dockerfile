@@ -34,24 +34,24 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Kubernetes tools
-# kubectl
-RUN curl -fsSL https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
+# kubectl (latest stable version)
+RUN curl -fsSL https://dl.k8s.io/release/stable.txt | xargs -I {} curl -fsSL https://dl.k8s.io/release/{}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 
-# helm
-RUN curl -fsSL https://get.helm.sh/helm-v3.13.1-linux-amd64.tar.gz -o helm.tar.gz \
+# helm (latest stable version)
+RUN curl -fsSL https://api.github.com/repos/helm/helm/releases/latest | jq -r '.tag_name' | xargs -I {} curl -fsSL https://get.helm.sh/helm-{}-linux-amd64.tar.gz -o helm.tar.gz \
     && tar -zxvf helm.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
     && rm -rf linux-amd64 helm.tar.gz
 
-# kustomize
-RUN curl -fsSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.1.1/kustomize_v5.1.1_linux_amd64.tar.gz -o kustomize.tar.gz \
+# kustomize (latest stable version)
+RUN curl -fsSL https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest | jq -r '.tag_name' | sed 's/kustomize\///' | xargs -I {} curl -fsSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F{}/kustomize_{}_linux_amd64.tar.gz -o kustomize.tar.gz \
     && tar -zxvf kustomize.tar.gz \
     && mv kustomize /usr/local/bin/ \
     && rm kustomize.tar.gz
 
-# Install additional tools like k9s, kubectx, etc.
-RUN curl -fsSL https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Linux_amd64.tar.gz -o k9s.tar.gz \
+# Install additional tools like k9s (latest stable version)
+RUN curl -fsSL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r '.tag_name' | xargs -I {} curl -fsSL https://github.com/derailed/k9s/releases/download/{}/k9s_Linux_amd64.tar.gz -o k9s.tar.gz \
     && tar -zxvf k9s.tar.gz \
     && mv k9s /usr/local/bin/ \
     && rm k9s.tar.gz LICENSE README.md 2>/dev/null || true
