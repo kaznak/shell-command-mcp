@@ -13,72 +13,49 @@ This is an MCP (Model Context Protocol) server that allows executing shell comma
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Node.js 20.x and npm (for local development)
+- Docker
 
-### Installation
+### Usage with Claude for Desktop
 
-1. Clone this repository:
+Add the following configuration to your Claude for Desktop configuration file.
 
-   ```
-   git clone https://github.com/yourusername/shell-command-mcp.git
-   cd shell-command-mcp
-   ```
-
-2. Build the Docker image:
-
-   ```
-   make build
-   ```
-
-3. Start the MCP server:
-   ```
-   make start
-   ```
-
-### Local Development
-
-1. Install dependencies:
-
-   ```
-   npm ci
-   ```
-
-2. Start the development server:
-
-   ```
-   npm run dev
-   ```
-
-3. Lint and format code:
-   ```
-   npm run lint
-   npm run format
-   ```
-
-## Usage with Claude for Desktop
-
-Add the following configuration to your Claude for Desktop configuration file:
+MacOS:
 
 ```json
-{
-  "mcpServers": {
-    "shell-command": {
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "-i",
-        "-v",
-        "/path/to/home/dir:/home/mcp",
-        "ghcr.io/kaznak/shell-command-mcp:latest"
-      ]
-    }
-  }
+"shell-command": {
+  "command": "docker",
+  "args": [
+    "run",
+    "--rm",
+    "-i",
+    "--mount",
+    "type=bind,src=/Users/user-name/ClaudeWorks,dst=/home/mcp/ClaudeWorks",
+    "ghcr.io/kaznak/shell-command-mcp:v1.0.0"
+  ]
 }
 ```
 
-Replace `/path/to/home/dir` with the directory you want to make available to the container.
+Replace `/Users/user-name/ClaudeWorks` with the directory you want to make available to the container.
+
+Windows:
+
+```json
+"shell-command": {
+   "command": "docker",
+   "args": [
+      "run",
+      "--rm",
+      "-i",
+      "--mount",
+      "type=bind,src=\\\\wsl.localhost\\Ubuntu\\home\\user-name\\ClaudeWorks,dst=/home/mcp/Works",
+      "ghcr.io/kaznak/shell-command-mcp:v1.0.0"
+   ]
+}
+```
+
+### Feed some prompts
+
+To Operate the files in the mounted directory.
 
 ## Available MCP Tools
 
