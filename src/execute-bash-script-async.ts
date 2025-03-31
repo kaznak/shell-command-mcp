@@ -3,6 +3,12 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { z } from 'zod';
 import { spawn } from 'child_process';
 
+export const toolName = 'execute-bash-script-async';
+
+export const toolDescription = `This tool executes shell script on bash asynchronously.
+Each command execution spawn a new bash process.
+`;
+
 export interface CommandOptions {
   cwd?: string;
   env?: Record<string, string>;
@@ -10,6 +16,24 @@ export interface CommandOptions {
   outputMode?: 'complete' | 'line' | 'character' | 'chunk';
   onOutput?: (data: string, isStderr: boolean) => void;
 }
+
+export const toolOptionsSchema = {
+  command: z.string().describe('The bash script to execute'),
+  options: z.object({
+    cwd: z.string().optional().describe(`The working directory to execute the script.
+use this option argument to avoid cd command in the first line of the script.
+`),
+    env: z.record(z.string(), z.string()).optional().describe('The environment variables to set'),
+    timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
+    outputMode: z.enum(['complete', 'line', 'character', 'chunk']).optional().default('complete')
+      .describe(`The output mode for the script.
+- complete: Notify when the command is completed
+- line: Notify on each line of output
+- chunk: Notify on each chunk of output
+- character: Notify on each character of output
+`),
+  }),
+};
 
 export interface CommandResult {
   stdout: string;
@@ -153,28 +177,9 @@ export function setTool(mcpServer: McpServer) {
 
   // 単一のツールとして登録
   mcpServer.tool(
-    'execute-bash-script-async',
-    `This tool executes shell script on bash asynchronously.
-Each command execution spawn a new bash process.
-  `,
-    {
-      command: z.string().describe('The bash script to execute'),
-      options: z
-        .object({
-          cwd: z.string().optional().describe('The working directory to execute the script'),
-          env: z
-            .record(z.string(), z.string())
-            .optional()
-            .describe('The environment variables to set'),
-          timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
-          outputMode: z
-            .enum(['complete', 'line', 'character', 'chunk'])
-            .optional()
-            .default('complete')
-            .describe('Output mode: complete, line, character, or chunk'),
-        })
-        .optional(),
-    },
+    toolName,
+    toolDescription,
+    toolOptionsSchema,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async ({ command, options = {} }, extra) => {
       try {
