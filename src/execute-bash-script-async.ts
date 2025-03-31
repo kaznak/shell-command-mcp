@@ -176,25 +176,14 @@ export function setTool(mcpServer: McpServer) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async ({ command, options = {} }, extra) => {
       try {
+        // outputModeを取得、デフォルト値は'complete'
         const outputMode = options.outputMode || 'complete';
+        // 進捗トークンを生成
+        const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
         // すべてのモードで非同期処理を行う
         // completeモードでは全ての出力が集まってから結果を返す
         if (outputMode === 'complete') {
-          // 進捗トークンを使用するがストリーミング通知なし
-          const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
-          // 初期レスポンスを返す
-          const initialResponse = {
-            content: [
-              {
-                type: 'text' as const,
-                text: `Command execution started. Waiting for completion...`,
-              },
-            ],
-            progressToken,
-          };
-
           // バックグラウンドでコマンドを実行
           executeCommand(command, {
             ...options,
@@ -245,12 +234,7 @@ export function setTool(mcpServer: McpServer) {
                 },
               });
             });
-
-          return initialResponse;
         } else {
-          // ストリーミングモードの場合
-          const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
           // バッファリングとバッチ処理のための変数
           let outputBuffer = '';
           let updateTimer: NodeJS.Timeout | null = null;
@@ -366,18 +350,18 @@ export function setTool(mcpServer: McpServer) {
                 },
               });
             });
-
-          // 進捗トークンを含む初期レスポンスを返す
-          return {
-            content: [
-              {
-                type: 'text' as const,
-                text: `Command execution started with ${outputMode} streaming mode.`,
-              },
-            ],
-            progressToken,
-          };
         }
+
+        // 初期レスポンスを返す
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Command execution started with output mode, ${outputMode}`,
+            },
+          ],
+          progressToken,
+        };
       } catch (error) {
         return {
           content: [
