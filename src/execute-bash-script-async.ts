@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { z } from 'zod';
 import { spawn } from 'child_process';
 
@@ -6,6 +7,8 @@ export interface CommandOptions {
   cwd?: string;
   env?: Record<string, string>;
   timeout?: number;
+  outputMode?: 'complete' | 'line' | 'character' | 'chunk';
+  onOutput?: (data: string, isStderr: boolean) => void;
 }
 
 export interface CommandResult {
@@ -15,15 +18,15 @@ export interface CommandResult {
 }
 
 /**
- * Execute a command using bash and return the result
- *
- * Each command execution spawn a new bash process.
- * This implementation causes overhead but is simple and isolated.
+ * 柔軟な出力モードをサポートするコマンド実行関数
  */
 export async function executeCommand(
   command: string,
   options: CommandOptions = {},
 ): Promise<CommandResult> {
+  const outputMode = options.outputMode || 'complete';
+  const onOutput = options.onOutput;
+
   return new Promise((resolve, reject) => {
     // 環境変数を設定
     const env = {
@@ -40,16 +43,64 @@ export async function executeCommand(
 
     let stdout = '';
     let stderr = '';
+    let stdoutBuffer = '';
+    let stderrBuffer = '';
     let timeoutId: NodeJS.Timeout | null = null;
 
-    // 標準出力の収集
+    // 標準出力の処理
     bash.stdout.on('data', (data) => {
-      stdout += data.toString();
+      const chunk = data.toString();
+      stdout += chunk;
+
+      if (onOutput) {
+        if (outputMode === 'character') {
+          // 文字ごとに通知
+          for (const char of chunk) {
+            onOutput(char, false);
+          }
+        } else if (outputMode === 'line') {
+          // 行ごとに通知
+          stdoutBuffer += chunk;
+          const lines = stdoutBuffer.split('\n');
+          stdoutBuffer = lines.pop() || '';
+
+          for (const line of lines) {
+            onOutput(line, false);
+          }
+        } else if (outputMode === 'chunk') {
+          // チャンク（データ受信単位）ごとに通知
+          onOutput(chunk, false);
+        }
+        // complete モードでは通知なし
+      }
     });
 
-    // 標準エラー出力の収集
+    // 標準エラー出力の処理
     bash.stderr.on('data', (data) => {
-      stderr += data.toString();
+      const chunk = data.toString();
+      stderr += chunk;
+
+      if (onOutput) {
+        if (outputMode === 'character') {
+          // 文字ごとに通知
+          for (const char of chunk) {
+            onOutput(char, true);
+          }
+        } else if (outputMode === 'line') {
+          // 行ごとに通知
+          stderrBuffer += chunk;
+          const lines = stderrBuffer.split('\n');
+          stderrBuffer = lines.pop() || '';
+
+          for (const line of lines) {
+            onOutput(line, true);
+          }
+        } else if (outputMode === 'chunk') {
+          // チャンク（データ受信単位）ごとに通知
+          onOutput(chunk, true);
+        }
+        // complete モードでは通知なし
+      }
     });
 
     // タイムアウト処理
@@ -63,6 +114,16 @@ export async function executeCommand(
     // プロセス終了時の処理
     bash.on('close', (code) => {
       if (timeoutId) clearTimeout(timeoutId);
+
+      // バッファの残りを処理（全てのモードで実行）
+      if (onOutput) {
+        if (stdoutBuffer) {
+          onOutput(stdoutBuffer, false);
+        }
+        if (stderrBuffer) {
+          onOutput(stderrBuffer, true);
+        }
+      }
 
       console.error('bash process exited with code', code);
       resolve({
@@ -85,45 +146,251 @@ export async function executeCommand(
   });
 }
 
-// Execute a shell command
-export function setTool(server: McpServer) {
-  server.tool(
-    'execute-bash-script-sync',
-    `This tool executes shell script on bash synchronously.
+// MCPサーバーにコマンド実行ツールを追加する関数
+export function setTool(mcpServer: McpServer) {
+  // McpServerインスタンスから低レベルのServerインスタンスにアクセスする
+  const server: Server = mcpServer.server;
+
+  // 単一のツールとして登録
+  mcpServer.tool(
+    'execute-bash-script-async',
+    `This tool executes shell script on bash asynchronously.
 Each command execution spawn a new bash process.
   `,
     {
       command: z.string().describe('The bash script to execute'),
-      options: z.object({
-        cwd: z.string().optional().describe('The working directory to execute the script'),
-        env: z
-          .record(z.string(), z.string())
-          .optional()
-          .describe('The environment variables to set'),
-        timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
-      }),
+      options: z
+        .object({
+          cwd: z.string().optional().describe('The working directory to execute the script'),
+          env: z
+            .record(z.string(), z.string())
+            .optional()
+            .describe('The environment variables to set'),
+          timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
+          outputMode: z
+            .enum(['complete', 'line', 'character', 'chunk'])
+            .optional()
+            .default('complete')
+            .describe('Output mode: complete, line, character, or chunk'),
+        })
+        .optional(),
     },
-    async ({ command, options }) => {
-      const { stdout, stderr, exitCode } = await executeCommand(command, options);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `stdout: ${stdout}`,
-            resource: undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ({ command, options = {} }, extra) => {
+      try {
+        const outputMode = options.outputMode || 'complete';
+
+        // すべてのモードで非同期処理を行う
+        // completeモードでは全ての出力が集まってから結果を返す
+        if (outputMode === 'complete') {
+          // 進捗トークンを使用するがストリーミング通知なし
+          const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+          // 初期レスポンスを返す
+          const initialResponse = {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Command execution started. Waiting for completion...`,
+              },
+            ],
+            progressToken,
+          };
+
+          // バックグラウンドでコマンドを実行
+          executeCommand(command, {
+            ...options,
+            outputMode: 'complete',
+          })
+            .then(({ stdout, stderr, exitCode }) => {
+              // 完了通知を送信
+              server.notification({
+                method: 'notifications/tools/progress',
+                params: {
+                  progressToken,
+                  result: {
+                    content: [
+                      {
+                        type: 'text' as const,
+                        text: `stdout: ${stdout}`,
+                      },
+                      {
+                        type: 'text' as const,
+                        text: `stderr: ${stderr}`,
+                      },
+                      {
+                        type: 'text' as const,
+                        text: `exitCode: ${exitCode}`,
+                      },
+                    ],
+                    isComplete: true,
+                  },
+                },
+              });
+            })
+            .catch((error) => {
+              // エラー通知を送信
+              server.notification({
+                method: 'notifications/tools/progress',
+                params: {
+                  progressToken,
+                  result: {
+                    content: [
+                      {
+                        type: 'text' as const,
+                        text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                      },
+                    ],
+                    isComplete: true,
+                    isError: true,
+                  },
+                },
+              });
+            });
+
+          return initialResponse;
+        }
+
+        // ストリーミングモードの場合
+        const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+        // バッファリングとバッチ処理のための変数
+        let outputBuffer = '';
+        let updateTimer: NodeJS.Timeout | null = null;
+        const updateInterval = 100; // ミリ秒単位での更新間隔
+
+        // バッファ内容を送信する関数
+        const flushBuffer = () => {
+          if (outputBuffer) {
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: outputBuffer,
+                    },
+                  ],
+                  isComplete: false,
+                },
+              },
+            });
+            outputBuffer = '';
+          }
+        };
+
+        // バックグラウンドでコマンドを実行
+        executeCommand(command, {
+          ...options,
+          outputMode,
+          onOutput: (data, isStderr) => {
+            // 出力形式を整形
+            const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
+
+            // 文字モードとchunkモードではバッファリング、行モードでは即時送信
+            if (outputMode === 'character' || outputMode === 'chunk') {
+              outputBuffer += formattedOutput;
+
+              if (!updateTimer) {
+                updateTimer = setTimeout(() => {
+                  flushBuffer();
+                  updateTimer = null;
+                }, updateInterval);
+              }
+            } else {
+              // 行モードでは各行を個別に送信
+              server.notification({
+                method: 'notifications/tools/progress',
+                params: {
+                  progressToken,
+                  result: {
+                    content: [
+                      {
+                        type: 'text' as const,
+                        text: formattedOutput,
+                      },
+                    ],
+                    isComplete: false,
+                  },
+                },
+              });
+            }
           },
-          {
-            type: 'text',
-            text: `stderr: ${stderr}`,
-            resource: undefined,
-          },
-          {
-            type: 'text',
-            text: `exitCode: ${exitCode}`,
-            resource: undefined,
-          },
-        ],
-      };
+        })
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          .then(({ stdout, stderr, exitCode }) => {
+            // 残りのバッファをフラッシュ
+            if (updateTimer) {
+              clearTimeout(updateTimer);
+              flushBuffer();
+            }
+
+            // 最終結果で完了を通知
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: `Command completed with exit code: ${exitCode}`,
+                    },
+                  ],
+                  isComplete: true,
+                },
+              },
+            });
+          })
+          .catch((error) => {
+            // 残りのバッファをフラッシュ
+            if (updateTimer) {
+              clearTimeout(updateTimer);
+              flushBuffer();
+            }
+
+            // エラーが発生した場合
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                    },
+                  ],
+                  isComplete: true,
+                  isError: true,
+                },
+              },
+            });
+          });
+
+        // 進捗トークンを含む初期レスポンスを返す
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Command execution started with ${outputMode} streaming mode.`,
+            },
+          ],
+          progressToken,
+        };
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ],
+          isError: true,
+        };
+      }
     },
   );
 }

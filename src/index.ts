@@ -1,6 +1,7 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { setTool } from './execute-bash-script-sync.js';
+import { setTool as setSyncTool } from './execute-bash-script-sync.js';
+import { setTool as setAsyncTool } from './execute-bash-script-async.js';
 
 // Create an MCP server
 export const server = new McpServer({
@@ -9,7 +10,8 @@ export const server = new McpServer({
   version: '1.0.0',
 });
 
-setTool(server);
+setSyncTool(server);
+setAsyncTool(server);
 
 async function main() {
   try {
