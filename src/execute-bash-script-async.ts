@@ -247,58 +247,18 @@ export function setTool(mcpServer: McpServer) {
             });
 
           return initialResponse;
-        }
+        } else {
+          // ストリーミングモードの場合
+          const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
-        // ストリーミングモードの場合
-        const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+          // バッファリングとバッチ処理のための変数
+          let outputBuffer = '';
+          let updateTimer: NodeJS.Timeout | null = null;
+          const updateInterval = 100; // ミリ秒単位での更新間隔
 
-        // バッファリングとバッチ処理のための変数
-        let outputBuffer = '';
-        let updateTimer: NodeJS.Timeout | null = null;
-        const updateInterval = 100; // ミリ秒単位での更新間隔
-
-        // バッファ内容を送信する関数
-        const flushBuffer = () => {
-          if (outputBuffer) {
-            server.notification({
-              method: 'notifications/tools/progress',
-              params: {
-                progressToken,
-                result: {
-                  content: [
-                    {
-                      type: 'text' as const,
-                      text: outputBuffer,
-                    },
-                  ],
-                  isComplete: false,
-                },
-              },
-            });
-            outputBuffer = '';
-          }
-        };
-
-        // バックグラウンドでコマンドを実行
-        executeCommand(command, {
-          ...options,
-          outputMode,
-          onOutput: (data, isStderr) => {
-            // 出力形式を整形
-            const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
-
-            // 文字モードとchunkモードではバッファリング、行モードでは即時送信
-            if (outputMode === 'character' || outputMode === 'chunk') {
-              outputBuffer += formattedOutput;
-
-              if (!updateTimer) {
-                updateTimer = setTimeout(() => {
-                  flushBuffer();
-                  updateTimer = null;
-                }, updateInterval);
-              }
-            } else {
-              // 行モードでは各行を個別に送信
+          // バッファ内容を送信する関数
+          const flushBuffer = () => {
+            if (outputBuffer) {
               server.notification({
                 method: 'notifications/tools/progress',
                 params: {
@@ -307,77 +267,117 @@ export function setTool(mcpServer: McpServer) {
                     content: [
                       {
                         type: 'text' as const,
-                        text: formattedOutput,
+                        text: outputBuffer,
                       },
                     ],
                     isComplete: false,
                   },
                 },
               });
+              outputBuffer = '';
             }
-          },
-        })
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .then(({ stdout, stderr, exitCode }) => {
-            // 残りのバッファをフラッシュ
-            if (updateTimer) {
-              clearTimeout(updateTimer);
-              flushBuffer();
-            }
+          };
 
-            // 最終結果で完了を通知
-            server.notification({
-              method: 'notifications/tools/progress',
-              params: {
-                progressToken,
-                result: {
-                  content: [
-                    {
-                      type: 'text' as const,
-                      text: `Command completed with exit code: ${exitCode}`,
+          // バックグラウンドでコマンドを実行
+          executeCommand(command, {
+            ...options,
+            outputMode,
+            onOutput: (data, isStderr) => {
+              // 出力形式を整形
+              const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
+
+              // 文字モードとchunkモードではバッファリング、行モードでは即時送信
+              if (outputMode === 'character' || outputMode === 'chunk') {
+                outputBuffer += formattedOutput;
+
+                if (!updateTimer) {
+                  updateTimer = setTimeout(() => {
+                    flushBuffer();
+                    updateTimer = null;
+                  }, updateInterval);
+                }
+              } else {
+                // 行モードでは各行を個別に送信
+                server.notification({
+                  method: 'notifications/tools/progress',
+                  params: {
+                    progressToken,
+                    result: {
+                      content: [
+                        {
+                          type: 'text' as const,
+                          text: formattedOutput,
+                        },
+                      ],
+                      isComplete: false,
                     },
-                  ],
-                  isComplete: true,
-                },
-              },
-            });
-          })
-          .catch((error) => {
-            // 残りのバッファをフラッシュ
-            if (updateTimer) {
-              clearTimeout(updateTimer);
-              flushBuffer();
-            }
-
-            // エラーが発生した場合
-            server.notification({
-              method: 'notifications/tools/progress',
-              params: {
-                progressToken,
-                result: {
-                  content: [
-                    {
-                      type: 'text' as const,
-                      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-                    },
-                  ],
-                  isComplete: true,
-                  isError: true,
-                },
-              },
-            });
-          });
-
-        // 進捗トークンを含む初期レスポンスを返す
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: `Command execution started with ${outputMode} streaming mode.`,
+                  },
+                });
+              }
             },
-          ],
-          progressToken,
-        };
+          })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .then(({ stdout, stderr, exitCode }) => {
+              // 残りのバッファをフラッシュ
+              if (updateTimer) {
+                clearTimeout(updateTimer);
+                flushBuffer();
+              }
+
+              // 最終結果で完了を通知
+              server.notification({
+                method: 'notifications/tools/progress',
+                params: {
+                  progressToken,
+                  result: {
+                    content: [
+                      {
+                        type: 'text' as const,
+                        text: `Command completed with exit code: ${exitCode}`,
+                      },
+                    ],
+                    isComplete: true,
+                  },
+                },
+              });
+            })
+            .catch((error) => {
+              // 残りのバッファをフラッシュ
+              if (updateTimer) {
+                clearTimeout(updateTimer);
+                flushBuffer();
+              }
+
+              // エラーが発生した場合
+              server.notification({
+                method: 'notifications/tools/progress',
+                params: {
+                  progressToken,
+                  result: {
+                    content: [
+                      {
+                        type: 'text' as const,
+                        text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                      },
+                    ],
+                    isComplete: true,
+                    isError: true,
+                  },
+                },
+              });
+            });
+
+          // 進捗トークンを含む初期レスポンスを返す
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Command execution started with ${outputMode} streaming mode.`,
+              },
+            ],
+            progressToken,
+          };
+        }
       } catch (error) {
         return {
           content: [
