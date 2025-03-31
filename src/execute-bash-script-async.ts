@@ -42,7 +42,7 @@ export interface CommandResult {
 }
 
 /**
- * 出力ハンドリング関数
+ * シェルスクリプト出力ハンドリング関数
  */
 function handleOutput(
   chunk: string,
