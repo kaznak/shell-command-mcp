@@ -2,11 +2,31 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { spawn } from 'child_process';
 
+export const toolName = 'execute-bash-script-sync';
+export const toolDescription = `This tool executes shell scripts on bash synchronously.
+Each script execution spawn a new bash process.
+Use execute-bash-script-async tool mainly instead of this to save execution time except waiting task.
+`;
+
 export interface CommandOptions {
   cwd?: string;
   env?: Record<string, string>;
   timeout?: number;
 }
+
+export const toolOptionsSchema = {
+  command: z.string().describe('The bash script to execute'),
+  options: z.object({
+    cwd: z.string().optional().describe(`The working directory to execute the script.
+use this option argument to avoid cd command in the first line of the script.
+`),
+    env: z
+      .record(z.string(), z.string())
+      .optional()
+      .describe('The environment variables for the script'),
+    timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
+  }),
+};
 
 export interface CommandResult {
   stdout: string;
@@ -87,44 +107,26 @@ export async function executeCommand(
 
 // Execute a shell command
 export function setTool(server: McpServer) {
-  server.tool(
-    'execute-bash-script-sync',
-    `This tool executes shell script on bash synchronously.
-Each command execution spawn a new bash process.
-Use execute-bash-script-async tool mainly instead of this to save execution time except waiting task.
-  `,
-    {
-      command: z.string().describe('The bash script to execute'),
-      options: z.object({
-        cwd: z.string().optional().describe('The working directory to execute the script'),
-        env: z
-          .record(z.string(), z.string())
-          .optional()
-          .describe('The environment variables to set'),
-        timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
-      }),
-    },
-    async ({ command, options }) => {
-      const { stdout, stderr, exitCode } = await executeCommand(command, options);
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `stdout: ${stdout}`,
-            resource: undefined,
-          },
-          {
-            type: 'text',
-            text: `stderr: ${stderr}`,
-            resource: undefined,
-          },
-          {
-            type: 'text',
-            text: `exitCode: ${exitCode}`,
-            resource: undefined,
-          },
-        ],
-      };
-    },
-  );
+  server.tool(toolName, toolDescription, toolOptionsSchema, async ({ command, options }) => {
+    const { stdout, stderr, exitCode } = await executeCommand(command, options);
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `stdout: ${stdout}`,
+          resource: undefined,
+        },
+        {
+          type: 'text',
+          text: `stderr: ${stderr}`,
+          resource: undefined,
+        },
+        {
+          type: 'text',
+          text: `exitCode: ${exitCode}`,
+          resource: undefined,
+        },
+      ],
+    };
+  });
 }
