@@ -1,13 +1,19 @@
 # Shell Command MCP Server
 
-This is an MCP (Model Context Protocol) server that allows executing shell commands within a Docker container. It provides a secure and isolated environment for running commands without giving access to the host Docker daemon.
+This is an MCP (Model Context Protocol) server that allows executing shell commands within a Docker container. It provides a secure and isolated workspace for running commands without giving access to the host Docker daemon.
 
 ## Features
 
-- Run shell commands through a simple MCP interface
-- Kubernetes tools included: kubectl, helm, kustomize, k9s
+- Run shell scripts through a simple MCP interface
+  - synchronous execution
+  - asynchronous execution with 4 different modes
+    - complete: notify when the command is completed
+    - line: notify on each line of output
+    - chunk: notify on each chunk of output
+    - character: notify on each character of output
+- Kubernetes tools included: kubectl, helm, kustomize, hemfile
 - Isolated Docker container environment with non-root user
-- Built with TypeScript and the MCP SDK
+  - host-container userid/groupid mapping implemented. this allows the container to run as the same user as the host, ensuring that files created by the container have the same ownership and permissions as those created by the host.
 
 ## Getting Started
 
@@ -59,16 +65,39 @@ To Operate the files in the mounted directory.
 
 ## Available MCP Tools
 
-### execute-command
+### execute-bash-script-sync
 
-Execute any shell command within the container.
+Execute any bash script synchronously within the container.
+
+Each command execution spawn a new bash process.
+
+Use execute-bash-script-async tool mainly instead of this to save execution time except waiting task.
 
 ```
 Arguments:
-- command: The shell command to execute
-- workingDir: (optional) Working directory for command execution
-- env: (optional) Environment variables for the command
+- command: The bash script to execute
+- workingDir: (optional) The working directory to execute the script
+- env: (optional) The environment variables for the script
 - timeout: (optional) Timeout in milliseconds
+```
+
+### execute-bash-script-async
+
+Execute any bash script asynchronously within the container.
+
+Each command execution spawn a new bash process.
+
+```
+Arguments:
+- command: The bash script to execute
+- workingDir: (optional) The working directory to execute the script
+- env: (optional) The environment variables for the script
+- timeout: (optional) Timeout in milliseconds
+- outputMode: (optional) The output mode for the script. default is complete
+  - complete: Notify when the command is completed
+  - line: Notify on each line of output
+  - chunk: Notify on each chunk of output
+  - character: Notify on each character of output
 ```
 
 ## Security Considerations
