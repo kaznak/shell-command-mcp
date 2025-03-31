@@ -42,6 +42,39 @@ export interface CommandResult {
 }
 
 /**
+ * 出力ハンドリング関数
+ */
+function handleOutput(
+  chunk: string,
+  isStderr: boolean,
+  outputMode: CommandOptions['outputMode'],
+  onOutput: CommandOptions['onOutput'] | undefined,
+  buffer: { current: string }, // バッファのコピーを回避
+) {
+  if (onOutput) {
+    if (outputMode === 'character') {
+      // 文字ごとに通知
+      for (const char of chunk) {
+        onOutput(char, isStderr);
+      }
+    } else if (outputMode === 'line') {
+      // 行ごとに通知
+      buffer.current += chunk;
+      const lines = buffer.current.split('\n');
+      buffer.current = lines.pop() || '';
+
+      for (const line of lines) {
+        onOutput(line, isStderr);
+      }
+    } else if (outputMode === 'chunk') {
+      // チャンク（データ受信単位）ごとに通知
+      onOutput(chunk, isStderr);
+    }
+    // complete モードでは通知なし
+  }
+}
+
+/**
  * 柔軟な出力モードをサポートするコマンド実行関数
  */
 export async function executeCommand(
@@ -76,27 +109,7 @@ export async function executeCommand(
       const chunk = data.toString();
       stdout += chunk;
 
-      if (onOutput) {
-        if (outputMode === 'character') {
-          // 文字ごとに通知
-          for (const char of chunk) {
-            onOutput(char, false);
-          }
-        } else if (outputMode === 'line') {
-          // 行ごとに通知
-          stdoutBuffer += chunk;
-          const lines = stdoutBuffer.split('\n');
-          stdoutBuffer = lines.pop() || '';
-
-          for (const line of lines) {
-            onOutput(line, false);
-          }
-        } else if (outputMode === 'chunk') {
-          // チャンク（データ受信単位）ごとに通知
-          onOutput(chunk, false);
-        }
-        // complete モードでは通知なし
-      }
+      handleOutput(chunk, false, outputMode, onOutput, { current: stdoutBuffer });
     });
 
     // 標準エラー出力の処理
@@ -104,27 +117,7 @@ export async function executeCommand(
       const chunk = data.toString();
       stderr += chunk;
 
-      if (onOutput) {
-        if (outputMode === 'character') {
-          // 文字ごとに通知
-          for (const char of chunk) {
-            onOutput(char, true);
-          }
-        } else if (outputMode === 'line') {
-          // 行ごとに通知
-          stderrBuffer += chunk;
-          const lines = stderrBuffer.split('\n');
-          stderrBuffer = lines.pop() || '';
-
-          for (const line of lines) {
-            onOutput(line, true);
-          }
-        } else if (outputMode === 'chunk') {
-          // チャンク（データ受信単位）ごとに通知
-          onOutput(chunk, true);
-        }
-        // complete モードでは通知なし
-      }
+      handleOutput(chunk, true, outputMode, onOutput, { current: stderrBuffer });
     });
 
     // タイムアウト処理
