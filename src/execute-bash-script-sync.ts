@@ -91,6 +91,7 @@ export function setTool(server: McpServer) {
     'execute-bash-script-sync',
     `This tool executes shell script on bash synchronously.
 Each command execution spawn a new bash process.
+Use execute-bash-script-async tool mainly instead of this to save execution time except waiting task.
   `,
     {
       command: z.string().describe('The bash script to execute'),
