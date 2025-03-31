@@ -88,7 +88,7 @@ export async function executeCommand(
 // Execute a shell command
 export function setTool(server: McpServer) {
   server.tool(
-    'execute-bash-script',
+    'execute-bash-script-sync',
     `This tool executes shell script on bash synchronously.
 Each command execution spawn a new bash process.
   `,
