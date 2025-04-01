@@ -47,11 +47,7 @@ RUN mkdir -p /root/tmp && cd /root/tmp   \
     | xargs -I {} curl -fsSL https://get.helm.sh/helm-{}-linux-amd64.tar.gz -o helm.tar.gz \
     && tar -zxvf helm.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
-    && cd .. && rm -rf /root/tmp    \
-    && helm plugin install https://github.com/databus23/helm-diff  \
-    && helm plugin install https://github.com/aslafy-z/helm-git \
-    && helm plugin install https://github.com/hypnoglow/helm-s3.git \
-    && helm plugin install https://github.com/jkroepke/helm-secrets
+    && cd .. && rm -rf /root/tmp
 
 # kustomize (latest stable version)
 RUN mkdir -p /root/tmp && cd /root/tmp   \
@@ -105,8 +101,17 @@ RUN npm install && npm run build
 
 # Create a non-root user to run the MCP server
 RUN useradd -m -s /bin/bash mcp
+
+USER mcp
+RUN helm plugin install https://github.com/databus23/helm-diff  \
+    && helm plugin install https://github.com/aslafy-z/helm-git \
+    && helm plugin install https://github.com/hypnoglow/helm-s3.git \
+    && helm plugin install https://github.com/jkroepke/helm-secrets
+
+USER root
+
 # Copy default home directory contents if the home directory is empty
-RUN cp -rp /home/mcp /home/mcp-home-backup
+RUN cp -rp /home/mcp/. /home/mcp-home-backup
 
 WORKDIR /home/mcp
 ENV WORKDIR=/home/mcp
