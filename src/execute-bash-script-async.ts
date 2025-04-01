@@ -32,6 +32,7 @@ export const toolOptionsSchema = {
   options: z.object({
     cwd: z.string().optional().describe(`The working directory to execute the script.
 use this option argument to avoid cd command in the first line of the script.
+\`~\` and environment variable is not supported. use absolute path instead.
 `),
     env: z.record(z.string(), z.string()).optional()
       .describe(`The environment variables for the script.
