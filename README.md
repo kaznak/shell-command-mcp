@@ -17,6 +17,15 @@ This is an MCP (Model Context Protocol) server that allows executing shell comma
   - mount a host directory to the container /home/mcp directory for persistence. it become the home directory the AI works in.
   - if the host directory is empty, the initial files will be copied form the backup in the container.
 
+## Design Philosophy
+
+This MCP server provides AI with a workspace similar to that of a human.
+Authorization is limited not by MCP functions, but by container isolation and external authorization restrictions.
+
+It provides more general tools such as shell script execution, so that they can be used without specialized knowledge of tool use.
+
+The server implementation is kept as simple as possible to facilitate code auditing.
+
 ## Getting Started
 
 ### Prerequisites
