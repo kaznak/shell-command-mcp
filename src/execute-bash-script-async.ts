@@ -208,154 +208,96 @@ export function setTool(mcpServer: McpServer) {
           }
         };
 
-        // すべてのモードで非同期処理を行う
-        // completeモードでは全ての出力が集まってから結果を返す
-        if (outputMode === 'complete') {
-          // バックグラウンドでコマンドを実行
-          executeCommand(command, {
-            ...options,
-          })
-            .then(({ stdout, stderr, exitCode }) => {
-              // 完了通知を送信
-              server.notification({
-                method: 'notifications/tools/progress',
-                params: {
-                  progressToken,
-                  result: {
-                    content: [
-                      {
-                        type: 'text' as const,
-                        text: `stdout: ${stdout}`,
-                      },
-                      {
-                        type: 'text' as const,
-                        text: `stderr: ${stderr}`,
-                      },
-                      {
-                        type: 'text' as const,
-                        text: `exitCode: ${exitCode}`,
-                      },
-                    ],
-                    isComplete: true,
-                  },
-                },
-              });
-            })
-            .catch((error) => {
-              // 残りのバッファをフラッシュ
-              if (updateTimer) {
-                clearTimeout(updateTimer);
+        const onOutput = (data: string, isStderr: boolean) => {
+          // 出力形式を整形
+          const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
+
+          // 文字モードとchunkモードではバッファリング、行モードでは即時送信
+          if (outputMode === 'character' || outputMode === 'chunk') {
+            outputBuffer += formattedOutput;
+
+            if (!updateTimer) {
+              updateTimer = setTimeout(() => {
                 flushBuffer();
-              }
-
-              // エラー通知を送信
-              server.notification({
-                method: 'notifications/tools/progress',
-                params: {
-                  progressToken,
-                  result: {
-                    content: [
-                      {
-                        type: 'text' as const,
-                        text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-                      },
-                    ],
-                    isComplete: true,
-                    isError: true,
-                  },
-                },
-              });
-            });
-        } else {
-          // バックグラウンドでコマンドを実行
-          executeCommand(command, {
-            ...options,
-            onOutput: (data, isStderr) => {
-              // 出力形式を整形
-              const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
-
-              // 文字モードとchunkモードではバッファリング、行モードでは即時送信
-              if (outputMode === 'character' || outputMode === 'chunk') {
-                outputBuffer += formattedOutput;
-
-                if (!updateTimer) {
-                  updateTimer = setTimeout(() => {
-                    flushBuffer();
-                    updateTimer = null;
-                  }, updateInterval);
-                }
-              } else {
-                // 行モードでは各行を個別に送信
-                server.notification({
-                  method: 'notifications/tools/progress',
-                  params: {
-                    progressToken,
-                    result: {
-                      content: [
-                        {
-                          type: 'text' as const,
-                          text: formattedOutput,
-                        },
-                      ],
-                      isComplete: false,
+                updateTimer = null;
+              }, updateInterval);
+            }
+          } else {
+            // 行モードでは各行を個別に送信
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: formattedOutput,
                     },
-                  },
-                });
-              }
-            },
-          })
-            .then(({ stdout, stderr, exitCode }) => {
-              // 完了通知を送信
-              server.notification({
-                method: 'notifications/tools/progress',
-                params: {
-                  progressToken,
-                  result: {
-                    content: [
-                      {
-                        type: 'text' as const,
-                        text: `stdout: ${stdout}`,
-                      },
-                      {
-                        type: 'text' as const,
-                        text: `stderr: ${stderr}`,
-                      },
-                      {
-                        type: 'text' as const,
-                        text: `exitCode: ${exitCode}`,
-                      },
-                    ],
-                    isComplete: true,
-                  },
+                  ],
+                  isComplete: false,
                 },
-              });
-            })
-            .catch((error) => {
-              // 残りのバッファをフラッシュ
-              if (updateTimer) {
-                clearTimeout(updateTimer);
-                flushBuffer();
-              }
-
-              // エラー通知を送信
-              server.notification({
-                method: 'notifications/tools/progress',
-                params: {
-                  progressToken,
-                  result: {
-                    content: [
-                      {
-                        type: 'text' as const,
-                        text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-                      },
-                    ],
-                    isComplete: true,
-                    isError: true,
-                  },
-                },
-              });
+              },
             });
-        }
+          }
+        };
+
+        // バックグラウンドでコマンドを実行
+        executeCommand(command, {
+          ...options,
+          onOutput: outputMode === 'complete' ? undefined : onOutput,
+        })
+          .then(({ stdout, stderr, exitCode }) => {
+            // 完了通知を送信
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: `stdout: ${stdout}`,
+                    },
+                    {
+                      type: 'text' as const,
+                      text: `stderr: ${stderr}`,
+                    },
+                    {
+                      type: 'text' as const,
+                      text: `exitCode: ${exitCode}`,
+                    },
+                  ],
+                  isComplete: true,
+                },
+              },
+            });
+          })
+          .catch((error) => {
+            // 残りのバッファをフラッシュ
+            if (updateTimer) {
+              clearTimeout(updateTimer);
+              flushBuffer();
+            }
+
+            // エラー通知を送信
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                    },
+                  ],
+                  isComplete: true,
+                  isError: true,
+                },
+              },
+            });
+          });
 
         // 初期レスポンスを返す
         return {
