@@ -80,36 +80,9 @@ To Operate the files in the mounted directory.
 
 Execute any bash script synchronously within the container.
 
-Each command execution spawn a new bash process.
-
-Use execute-bash-script-async tool mainly instead of this to save execution time except waiting task.
-
-```
-Arguments:
-- command: The bash script to execute
-- workingDir: (optional) The working directory to execute the script
-- env: (optional) The environment variables for the script
-- timeout: (optional) Timeout in milliseconds
-```
-
 ### execute-bash-script-async
 
 Execute any bash script asynchronously within the container.
-
-Each command execution spawn a new bash process.
-
-```
-Arguments:
-- command: The bash script to execute
-- workingDir: (optional) The working directory to execute the script
-- env: (optional) The environment variables for the script
-- timeout: (optional) Timeout in milliseconds
-- outputMode: (optional) The output mode for the script. default is complete
-  - complete: Notify when the command is completed
-  - line: Notify on each line of output
-  - chunk: Notify on each chunk of output
-  - character: Notify on each character of output
-```
 
 ## Security Considerations
 
