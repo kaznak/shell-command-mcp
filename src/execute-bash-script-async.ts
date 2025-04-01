@@ -17,6 +17,10 @@ export interface CommandOptions {
   onOutput?: (data: string, isStderr: boolean) => void;
 }
 
+export const toolOptionsDefaults = {
+  outPutMode: 'complete' as NonNullable<CommandOptions['outputMode']>,
+};
+
 export const toolOptionsSchema = {
   command: z.string().describe('The bash script to execute'),
   options: z.object({
@@ -25,8 +29,10 @@ use this option argument to avoid cd command in the first line of the script.
 `),
     env: z.record(z.string(), z.string()).optional().describe('The environment variables to set'),
     timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
-    outputMode: z.enum(['complete', 'line', 'character', 'chunk']).optional().default('complete')
-      .describe(`The output mode for the script.
+    outputMode: z
+      .enum(['complete', 'line', 'character', 'chunk'])
+      .optional()
+      .default(toolOptionsDefaults.outPutMode).describe(`The output mode for the script.
 - complete: Notify when the command is completed
 - line: Notify on each line of output
 - chunk: Notify on each chunk of output
@@ -58,11 +64,18 @@ function handleOutput(
     } else if (outputMode === 'line') {
       // 行ごとに通知
       buffer.current += chunk;
-      const lines = buffer.current.split('\n');
-      buffer.current = lines.pop() || '';
-
+      const lines = buffer.current.split('\n'); // 改行で分割
+      const lastLine = lines.pop(); // 最後の行を取得
       for (const line of lines) {
-        onOutput(line, isStderr);
+        onOutput(line + '\n', isStderr); // 改行を追加して通知
+      }
+      if (lastLine !== undefined && chunk.endsWith('\n')) {
+        // 最後のデータが改行で終わっている場合は通知
+        onOutput(lastLine + '\n', isStderr);
+        buffer.current = ''; // バッファをクリア
+      } else {
+        // 最後のデータが改行で終わっていない場合は、バッファに保持
+        buffer.current = lastLine || ''; // 未完成の行を保持
       }
     } else if (outputMode === 'chunk') {
       // チャンク（データ受信単位）ごとに通知
@@ -79,7 +92,7 @@ export async function executeCommand(
   command: string,
   options: CommandOptions = {},
 ): Promise<CommandResult> {
-  const outputMode = (options as CommandOptions).outputMode || 'complete';
+  const outputMode = (options as CommandOptions).outputMode || toolOptionsDefaults.outPutMode;
   const onOutput = options.onOutput;
 
   return new Promise((resolve, reject) => {
