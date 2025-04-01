@@ -81,7 +81,7 @@ export async function executeCommand(
   command: string,
   options: CommandOptions = {},
 ): Promise<CommandResult> {
-  const outputMode = options.outputMode || 'complete';
+  const outputMode = (options as CommandOptions).outputMode || 'complete';
   const onOutput = options.onOutput;
 
   return new Promise((resolve, reject) => {
@@ -177,9 +177,36 @@ export function setTool(mcpServer: McpServer) {
     async ({ command, options = {} }, extra) => {
       try {
         // outputModeを取得、デフォルト値は'complete'
-        const outputMode = options.outputMode || 'complete';
+        const outputMode = options?.outputMode || 'complete';
         // 進捗トークンを生成
         const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+        // バッファリングとバッチ処理のための変数
+        let outputBuffer = '';
+        let updateTimer: NodeJS.Timeout | null = null;
+        const updateInterval = 100; // ミリ秒単位での更新間隔
+
+        // バッファ内容を送信する関数
+        const flushBuffer = () => {
+          if (outputBuffer) {
+            server.notification({
+              method: 'notifications/tools/progress',
+              params: {
+                progressToken,
+                result: {
+                  content: [
+                    {
+                      type: 'text' as const,
+                      text: outputBuffer,
+                    },
+                  ],
+                  isComplete: false,
+                },
+              },
+            });
+            outputBuffer = '';
+          }
+        };
 
         // すべてのモードで非同期処理を行う
         // completeモードでは全ての出力が集まってから結果を返す
@@ -216,6 +243,12 @@ export function setTool(mcpServer: McpServer) {
               });
             })
             .catch((error) => {
+              // 残りのバッファをフラッシュ
+              if (updateTimer) {
+                clearTimeout(updateTimer);
+                flushBuffer();
+              }
+
               // エラー通知を送信
               server.notification({
                 method: 'notifications/tools/progress',
@@ -235,33 +268,6 @@ export function setTool(mcpServer: McpServer) {
               });
             });
         } else {
-          // バッファリングとバッチ処理のための変数
-          let outputBuffer = '';
-          let updateTimer: NodeJS.Timeout | null = null;
-          const updateInterval = 100; // ミリ秒単位での更新間隔
-
-          // バッファ内容を送信する関数
-          const flushBuffer = () => {
-            if (outputBuffer) {
-              server.notification({
-                method: 'notifications/tools/progress',
-                params: {
-                  progressToken,
-                  result: {
-                    content: [
-                      {
-                        type: 'text' as const,
-                        text: outputBuffer,
-                      },
-                    ],
-                    isComplete: false,
-                  },
-                },
-              });
-              outputBuffer = '';
-            }
-          };
-
           // バックグラウンドでコマンドを実行
           executeCommand(command, {
             ...options,
@@ -317,7 +323,7 @@ export function setTool(mcpServer: McpServer) {
                     content: [
                       {
                         type: 'text' as const,
-                        text: `Command completed with exit code: ${exitCode}`,
+                        text: `# Command completed with exit code: ${exitCode}`,
                       },
                     ],
                     isComplete: true,
@@ -332,7 +338,7 @@ export function setTool(mcpServer: McpServer) {
                 flushBuffer();
               }
 
-              // エラーが発生した場合
+              // エラー通知を送信
               server.notification({
                 method: 'notifications/tools/progress',
                 params: {
@@ -357,7 +363,7 @@ export function setTool(mcpServer: McpServer) {
           content: [
             {
               type: 'text' as const,
-              text: `Command execution started with output mode, ${outputMode}`,
+              text: `# Command execution started with output mode, ${outputMode}`,
             },
           ],
           progressToken,
