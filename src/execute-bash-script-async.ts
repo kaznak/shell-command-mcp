@@ -245,7 +245,7 @@ export function setTool(mcpServer: McpServer) {
         // バックグラウンドでコマンドを実行
         executeCommand(command, {
           ...options,
-          onOutput: outputMode === 'complete' ? undefined : onOutput,
+          onOutput,
         })
           .then(({ stdout, stderr, exitCode }) => {
             // 完了通知を送信
