@@ -5,9 +5,12 @@ import { spawn } from 'child_process';
 
 export const toolName = 'execute-bash-script-async';
 
-export const toolDescription = `This tool executes shell script on bash asynchronously.
-Each command execution spawn a new bash process.
-Plan the shell scripts you need beforehand and execute them in parallel.
+export const toolDescription = `This tool executes shell scripts asynchronously in bash.
+Executing each command creates a new bash process.
+Synchronous execution requires to wait the scripts completed.
+Asynchronous execution makes it possible to execute multiple scripts in parallel.
+You can reduce waiting time by planning in advance which shell scripts need to be executed and executing them in parallel.
+Avoid using execute-bash-script-sync tool unless you really need to, and use this execute-bash-script-async tool whenever possible.
 `;
 
 export interface CommandOptions {
