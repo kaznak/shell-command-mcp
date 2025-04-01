@@ -90,7 +90,7 @@ RUN npm install && npm run build
 # Create a non-root user to run the MCP server
 RUN useradd -m -s /bin/bash mcp
 # Copy default home directory contents if the home directory is empty
-COPY --chown=mcp:mcp /home/mcp /home/mcp-home-backup
+RUN cp -rp /home/mcp /home/mcp-home-backup
 
 WORKDIR /home/mcp
 ENV WORKDIR=/home/mcp
