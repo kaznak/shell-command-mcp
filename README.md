@@ -37,8 +37,8 @@ MacOS:
     "--rm",
     "-i",
     "--mount",
-    "type=bind,src=/Users/user-name/ClaudeWorks,dst=/home/mcp/ClaudeWorks",
-    "ghcr.io/kaznak/shell-command-mcp:v1.0.0"
+    "type=bind,src=/Users/user-name/MCPHome,dst=/home/mcp",
+    "ghcr.io/kaznak/shell-command-mcp:latest"
   ]
 }
 ```
@@ -55,8 +55,8 @@ Windows:
       "--rm",
       "-i",
       "--mount",
-      "type=bind,src=\\\\wsl.localhost\\Ubuntu\\home\\user-name\\ClaudeWorks,dst=/home/mcp/Works",
-      "ghcr.io/kaznak/shell-command-mcp:v1.0.0"
+      "type=bind,src=\\\\wsl.localhost\\Ubuntu\\home\\user-name\\MCPHome,dst=/home/mcp",
+      "ghcr.io/kaznak/shell-command-mcp:latest"
    ]
 }
 ```
