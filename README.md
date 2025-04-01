@@ -76,8 +76,8 @@ To Operate the files in the mounted directory.
 
 ## Available MCP Tools
 
-- execute-bash-script-sync
-- execute-bash-script-async
+- [execute-bash-script-sync](./src/execute-bash-script-sync.ts)
+- [execute-bash-script-async](./src/execute-bash-script-async.ts)
 
 ## Security Considerations
 
