@@ -76,13 +76,8 @@ To Operate the files in the mounted directory.
 
 ## Available MCP Tools
 
-### execute-bash-script-sync
-
-Execute any bash script synchronously within the container.
-
-### execute-bash-script-async
-
-Execute any bash script asynchronously within the container.
+- execute-bash-script-sync
+- execute-bash-script-async
 
 ## Security Considerations
 
