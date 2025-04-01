@@ -6,6 +6,7 @@ ENV NODE_VERSION=22.14.0
 
 # Install basic utilities and dependencies
 RUN apt-get update && apt-get install -y \
+    tzdata \
     curl \
     wget \
     git \
