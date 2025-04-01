@@ -36,8 +36,6 @@ use this option argument to avoid cd command in the first line of the script.
 };
 
 export interface CommandResult {
-  stdout: string;
-  stderr: string;
   exitCode: number;
 }
 
@@ -98,26 +96,31 @@ export async function executeCommand(
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
-    let stdout = '';
-    let stderr = '';
-    let stdoutBuffer = '';
-    let stderrBuffer = '';
+    const stdoutBuffer = { current: '' }; // バッファのコピーを回避
+    const stderrBuffer = { current: '' }; // バッファのコピーを回避
     let timeoutId: NodeJS.Timeout | null = null;
+
+    const flushBuffer = () => {
+      if (onOutput) {
+        if (stdoutBuffer.current) {
+          onOutput(stdoutBuffer.current, false);
+          stdoutBuffer.current = ''; // バッファをクリア
+        }
+        if (stderrBuffer.current) {
+          onOutput(stderrBuffer.current, true);
+          stderrBuffer.current = ''; // バッファをクリア
+        }
+      }
+    };
 
     // 標準出力の処理
     bash.stdout.on('data', (data) => {
-      const chunk = data.toString();
-      stdout += chunk;
-
-      handleOutput(chunk, false, outputMode, onOutput, { current: stdoutBuffer });
+      handleOutput(data.toString(), false, outputMode, onOutput, stdoutBuffer);
     });
 
     // 標準エラー出力の処理
     bash.stderr.on('data', (data) => {
-      const chunk = data.toString();
-      stderr += chunk;
-
-      handleOutput(chunk, true, outputMode, onOutput, { current: stderrBuffer });
+      handleOutput(data.toString(), true, outputMode, onOutput, stderrBuffer);
     });
 
     // タイムアウト処理
@@ -130,29 +133,27 @@ export async function executeCommand(
 
     // プロセス終了時の処理
     bash.on('close', (code) => {
+      // タイマーをクリア
       if (timeoutId) clearTimeout(timeoutId);
 
-      // バッファの残りを処理（全てのモードで実行）
-      if (onOutput) {
-        if (stdoutBuffer) {
-          onOutput(stdoutBuffer, false);
-        }
-        if (stderrBuffer) {
-          onOutput(stderrBuffer, true);
-        }
-      }
+      // バッファをフラッシュ
+      flushBuffer();
 
+      // Note これは MCP サーバの実装であるので、ログは標準エラー出力に出す
       console.error('bash process exited with code', code);
       resolve({
-        stdout,
-        stderr,
         exitCode: code !== null ? code : 1,
       });
     });
 
     bash.on('error', (error) => {
+      // タイマーをクリア
       if (timeoutId) clearTimeout(timeoutId);
 
+      // バッファをフラッシュ
+      flushBuffer();
+
+      // Note これは MCP サーバの実装であるので、ログは標準エラー出力に出す
       console.error('Failed to start bash process:', error);
       reject(error);
     });
@@ -181,65 +182,23 @@ export function setTool(mcpServer: McpServer) {
         // 進捗トークンを生成
         const progressToken = `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
-        // バッファリングとバッチ処理のための変数
-        let outputBuffer = '';
-        let updateTimer: NodeJS.Timeout | null = null;
-        const updateInterval = 100; // ミリ秒単位での更新間隔
-
-        // バッファ内容を送信する関数
-        const flushBuffer = () => {
-          if (outputBuffer) {
-            server.notification({
-              method: 'notifications/tools/progress',
-              params: {
-                progressToken,
-                result: {
-                  content: [
-                    {
-                      type: 'text' as const,
-                      text: outputBuffer,
-                    },
-                  ],
-                  isComplete: false,
-                },
-              },
-            });
-            outputBuffer = '';
-          }
-        };
-
         const onOutput = (data: string, isStderr: boolean) => {
-          // 出力形式を整形
-          const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
-
-          // 文字モードとchunkモードではバッファリング、行モードでは即時送信
-          if (outputMode === 'character' || outputMode === 'chunk') {
-            outputBuffer += formattedOutput;
-
-            if (!updateTimer) {
-              updateTimer = setTimeout(() => {
-                flushBuffer();
-                updateTimer = null;
-              }, updateInterval);
-            }
-          } else {
-            // 行モードでは各行を個別に送信
-            server.notification({
-              method: 'notifications/tools/progress',
-              params: {
-                progressToken,
-                result: {
-                  content: [
-                    {
-                      type: 'text' as const,
-                      text: formattedOutput,
-                    },
-                  ],
-                  isComplete: false,
-                },
+          const fsMark = isStderr ? 'stderr' : 'stdout';
+          server.notification({
+            method: 'notifications/tools/progress',
+            params: {
+              progressToken,
+              result: {
+                content: [
+                  {
+                    type: 'text' as const,
+                    text: `${fsMark}: ${data}`,
+                  },
+                ],
+                isComplete: false,
               },
-            });
-          }
+            },
+          });
         };
 
         // バックグラウンドでコマンドを実行
@@ -247,7 +206,7 @@ export function setTool(mcpServer: McpServer) {
           ...options,
           onOutput,
         })
-          .then(({ stdout, stderr, exitCode }) => {
+          .then(({ exitCode }) => {
             // 完了通知を送信
             server.notification({
               method: 'notifications/tools/progress',
@@ -255,14 +214,6 @@ export function setTool(mcpServer: McpServer) {
                 progressToken,
                 result: {
                   content: [
-                    {
-                      type: 'text' as const,
-                      text: `stdout: ${stdout}`,
-                    },
-                    {
-                      type: 'text' as const,
-                      text: `stderr: ${stderr}`,
-                    },
                     {
                       type: 'text' as const,
                       text: `exitCode: ${exitCode}`,
@@ -274,12 +225,6 @@ export function setTool(mcpServer: McpServer) {
             });
           })
           .catch((error) => {
-            // 残りのバッファをフラッシュ
-            if (updateTimer) {
-              clearTimeout(updateTimer);
-              flushBuffer();
-            }
-
             // エラー通知を送信
             server.notification({
               method: 'notifications/tools/progress',
