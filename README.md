@@ -14,6 +14,8 @@ This is an MCP (Model Context Protocol) server that allows executing shell comma
 - Kubernetes tools included: kubectl, helm, kustomize, hemfile
 - Isolated Docker container environment with non-root user
   - host-container userid/groupid mapping implemented. this allows the container to run as the same user as the host, ensuring that files created by the container have the same ownership and permissions as those created by the host.
+  - mount a host directory to the container /home/mcp directory for persistence. it become the home directory the AI works in.
+  - if the host directory is empty, the initial files will be copied form the backup in the container.
 
 ## Getting Started
 
