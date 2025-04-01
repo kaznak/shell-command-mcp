@@ -47,7 +47,11 @@ RUN mkdir -p /root/tmp && cd /root/tmp   \
     | xargs -I {} curl -fsSL https://get.helm.sh/helm-{}-linux-amd64.tar.gz -o helm.tar.gz \
     && tar -zxvf helm.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
-    && cd .. && rm -rf /root/tmp
+    && cd .. && rm -rf /root/tmp    \
+    && helm plugin install https://github.com/databus23/helm-diff  \
+    && helm plugin install https://github.com/aslafy-z/helm-git \
+    && helm plugin install https://github.com/hypnoglow/helm-s3.git \
+    && helm plugin install https://github.com/jkroepke/helm-secrets
 
 # kustomize (latest stable version)
 RUN mkdir -p /root/tmp && cd /root/tmp   \
