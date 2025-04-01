@@ -23,8 +23,8 @@ if [ "$uid" -ne 0 ]; then
     fi
 fi
 
-if [ -z "$(ls -A "$HOME")" ]; then
-    cp -rp /home/mcp-home-backup/* $HOME
+if [ -z "$(find "$HOME" -mindepth 1 -print -quit)" ]; then
+    cp -rp /home/mcp-home-backup/. $HOME
 fi
 
 # このスクリプト自体は root で実行されているので、uid/gid 調整済みのユーザーとして指定されたコマンドを実行する。
