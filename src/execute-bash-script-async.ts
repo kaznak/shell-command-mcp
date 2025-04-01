@@ -7,6 +7,7 @@ export const toolName = 'execute-bash-script-async';
 
 export const toolDescription = `This tool executes shell script on bash asynchronously.
 Each command execution spawn a new bash process.
+Plan the shell scripts you need beforehand and execute them in parallel.
 `;
 
 export interface CommandOptions {
