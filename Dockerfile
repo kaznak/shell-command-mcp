@@ -84,14 +84,16 @@ RUN ARCH=$(uname -m | sed 's/aarch64/arm64/' | sed 's/x86_64/x64/') && \
     ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 WORKDIR /mcpserver
-COPY --chown=mcp:mcp . .
-RUN npm install && npm run build
+COPY . .
+RUN npm install && npm run build 
 
 # Create a non-root user to run the MCP server
 RUN useradd -m -s /bin/bash mcp
+# Copy default home directory contents if the home directory is empty
+COPY --chown=mcp:mcp /home/mcp /home/mcp-home-backup
 
 WORKDIR /home/mcp
-ENV WORKDIR=/home/mcp/Works/logs
+ENV WORKDIR=/home/mcp
 
 # Command to run the MCP server
 CMD ["/mcpserver/entrypoint.sh", "mcp", "node", "/mcpserver/build/index.js"]
