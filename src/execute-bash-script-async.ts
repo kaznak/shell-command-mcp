@@ -304,15 +304,8 @@ export function setTool(mcpServer: McpServer) {
               }
             },
           })
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .then(({ stdout, stderr, exitCode }) => {
-              // 残りのバッファをフラッシュ
-              if (updateTimer) {
-                clearTimeout(updateTimer);
-                flushBuffer();
-              }
-
-              // 最終結果で完了を通知
+              // 完了通知を送信
               server.notification({
                 method: 'notifications/tools/progress',
                 params: {
@@ -321,7 +314,15 @@ export function setTool(mcpServer: McpServer) {
                     content: [
                       {
                         type: 'text' as const,
-                        text: `# Command completed with exit code: ${exitCode}`,
+                        text: `stdout: ${stdout}`,
+                      },
+                      {
+                        type: 'text' as const,
+                        text: `stderr: ${stderr}`,
+                      },
+                      {
+                        type: 'text' as const,
+                        text: `exitCode: ${exitCode}`,
                       },
                     ],
                     isComplete: true,
