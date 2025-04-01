@@ -86,8 +86,13 @@ function handleOutput(
     } else if (outputMode === 'chunk') {
       // チャンク（データ受信単位）ごとに通知
       onOutput(chunk, isStderr);
+    } else if (outputMode === 'complete') {
+      // complete モードでは通知なし
+      buffer.current += chunk;
+    } else {
+      // 想定外の outputMode の場合に例外をスロー
+      throw new Error(`Unsupported outputMode: ${outputMode}`);
     }
-    // complete モードでは通知なし
   }
 }
 
