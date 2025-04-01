@@ -2,7 +2,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { spawn } from 'child_process';
 
+export const shellProgram = '/usr/bin/bash';
+
 export const toolName = 'execute-bash-script-sync';
+
 export const toolDescription = `This tool executes shell scripts synchronously in bash.
 Executing each command creates a new bash process.
 Synchronous execution requires to wait the scripts completed.
@@ -57,7 +60,7 @@ export async function executeCommand(
     };
 
     // bashプロセスを起動
-    const bash = spawn('bash', [], {
+    const bash = spawn(shellProgram, [], {
       cwd: options.cwd,
       env,
       stdio: ['pipe', 'pipe', 'pipe'],

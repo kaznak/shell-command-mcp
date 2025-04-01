@@ -3,6 +3,8 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { z } from 'zod';
 import { spawn } from 'child_process';
 
+export const shellProgram = '/usr/bin/bash';
+
 export const toolName = 'execute-bash-script-async';
 
 export const toolDescription = `This tool executes shell scripts asynchronously in bash.
@@ -117,7 +119,7 @@ export async function executeCommand(
     };
 
     // bashプロセスを起動
-    const bash = spawn('bash', [], {
+    const bash = spawn(shellProgram, [], {
       cwd: options.cwd,
       env,
       stdio: ['pipe', 'pipe', 'pipe'],
