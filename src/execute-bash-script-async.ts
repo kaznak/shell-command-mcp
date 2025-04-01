@@ -28,8 +28,13 @@ export const toolOptionsSchema = {
     cwd: z.string().optional().describe(`The working directory to execute the script.
 use this option argument to avoid cd command in the first line of the script.
 `),
-    env: z.record(z.string(), z.string()).optional().describe('The environment variables to set'),
-    timeout: z.number().int().positive().optional().describe('The timeout in milliseconds'),
+    env: z.record(z.string(), z.string()).optional()
+      .describe(`The environment variables for the script.
+      Set environment variables using this option instead of using export command in the script.
+      `),
+    timeout: z.number().int().positive().optional().describe(`The timeout in milliseconds.
+Set enough long timeout even if you don't need to set timeout to avoid unexpected blocking.
+`),
     outputMode: z
       .enum(['complete', 'line', 'character', 'chunk'])
       .optional()
