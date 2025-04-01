@@ -214,7 +214,6 @@ export function setTool(mcpServer: McpServer) {
           // バックグラウンドでコマンドを実行
           executeCommand(command, {
             ...options,
-            outputMode: 'complete',
           })
             .then(({ stdout, stderr, exitCode }) => {
               // 完了通知を送信
@@ -271,7 +270,6 @@ export function setTool(mcpServer: McpServer) {
           // バックグラウンドでコマンドを実行
           executeCommand(command, {
             ...options,
-            outputMode,
             onOutput: (data, isStderr) => {
               // 出力形式を整形
               const formattedOutput = `${isStderr ? '[stderr] ' : ''}${data}${outputMode === 'line' ? '\n' : ''}`;
