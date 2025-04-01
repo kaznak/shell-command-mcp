@@ -139,7 +139,7 @@ export async function executeCommand(
       // バッファをフラッシュ
       flushBuffer();
 
-      // Note これは MCP サーバの実装であるので、ログは標準エラー出力に出す
+      // NOTE これは MCP サーバの実装であるので、ログは標準エラー出力に出す
       console.error('bash process exited with code', code);
       resolve({
         exitCode: code !== null ? code : 1,
@@ -153,7 +153,7 @@ export async function executeCommand(
       // バッファをフラッシュ
       flushBuffer();
 
-      // Note これは MCP サーバの実装であるので、ログは標準エラー出力に出す
+      // NOTE これは MCP サーバの実装であるので、ログは標準エラー出力に出す
       console.error('Failed to start bash process:', error);
       reject(error);
     });
