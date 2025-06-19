@@ -1,3 +1,9 @@
+# *OBSOLETE*
+
+I recommend using Claude Code by running `claude mcp serve` instead of this MCP server.
+I have created [ai-agent-workspace](https://github.com/kaznak/container-images/tree/main/ai-agent-workspace) as a container to run Claude Code.
+Please use it as needed.
+
 # Shell Command MCP Server
 
 This is an MCP (Model Context Protocol) server that allows executing shell commands within a Docker container. It provides a secure and isolated workspace for running commands without giving access to the host Docker daemon.
